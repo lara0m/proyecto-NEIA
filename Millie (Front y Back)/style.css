@@ -26,6 +26,12 @@ h1 {
     margin: 0;
 }
 
+.logoHeader {
+    width: 8vw;
+    height: 8vw;
+
+}
+
 .boton {
     display: flex;
   justify-content: center;
