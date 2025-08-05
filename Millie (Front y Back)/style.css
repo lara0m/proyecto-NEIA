@@ -46,17 +46,17 @@ h1 {
     font-weight: bold;
     padding: 8px 16px;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 15px;
     
   }
   
   .botonIniciar::before {
     content: "▶";
-    font-size: 18px;
+    font-size: 22px;
   }
 
   h2 {
@@ -67,8 +67,8 @@ h1 {
   }
 
   .audio {
-    width: 5vw;
-    height: 5vw;
+    width: 4vw;
+    height: 4vw;
 
   }
 
