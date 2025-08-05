@@ -1,3 +1,55 @@
-h1{
-    font-size: 48px;
+body {
+    height: 100vh;
+    width: 100vw;
+    background-color: #F3E5F5;
+    margin: 0;
+    padding: 0;
+    }
+
+header {
+    background-color: #6A1B9A;
+    width: 100vw;
+    height: 20%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
+
+h1 {
+    color: #F5F5F5;
+    font-family: "Courier Prime", monospace;
+    font-weight: 500;
+    font-size: 15vh;
+    font-style: normal;
+    margin: 0;
+}
+
+.boton {
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+  width: 100vw;
+  }
+
+.botonIniciar {
+    background-color: #d6a8f0; 
+    border: 2px solid #6a1b9a; 
+    color: black;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+  }
+  
+  .botonIniciar::before {
+    content: "▶";
+    font-size: 18px;
+  }
