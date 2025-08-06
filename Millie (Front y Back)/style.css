@@ -15,6 +15,7 @@ header {
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    gap: 20px;
     text-align: center;
 }
 
@@ -40,9 +41,9 @@ h1 {
 }
 
 .botonIniciar {
-    background-color: #d6a8f0; 
+    background-color: #6a1b9a; 
     border: 2px solid #6a1b9a; 
-    color: black;
+    color: rgb(255, 255, 255);
     font-weight: bold;
     padding: 8px 16px;
     border-radius: 12px;
@@ -69,6 +70,8 @@ h1 {
   .audio {
     width: 4vw;
     height: 4vw;
+    cursor: pointer;
+    margin-top: 6px;
 
   }
 
@@ -82,16 +85,3 @@ h1 {
     justify-content: center;
   }
 
-.historial {
-  display: flex;
-  justify-content: center;
-}
-  h3 {
-    margin: 1vw;
-  font-size: 1.5vw;
-  font-family: sans-serif;
-  }
-
-  .historial:hover {
-    text-decoration: underline;  
-  }
