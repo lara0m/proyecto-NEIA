@@ -13,13 +13,16 @@
         <img src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\inteligencia-artificial.png" class="logoHeader">
     </header>
 
-    <div class="ESPACIO PARA VER SI SE PUEDE MOSTRAR EL EEG EN VIVO">
-    <h2>|</h2>
-    <h2>|</h2>
-    <h2>|</h2>
-    <h2>|</h2>
-    <h2>|</h2>
-    </div>
+  <div class="upload-box" onclick="abrirInput(event)">
+
+    <img class="icono" src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\cargarimagen.png" alt="Upload">
+
+    <img id="preview" class="preview">
+
+    <button id="removeBtn" class="remove-btn" onclick="eliminarImagen(event)">×</button>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" style="display: none" onchange="mostrarImagen(event)">
 
     <div class="boton">
     <button class="botonIniciar">INICIAR</button>
