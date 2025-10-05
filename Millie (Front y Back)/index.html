@@ -9,9 +9,46 @@
 </head>
 <body>
     <header>
-        <h1>NEIA</h1>
-        <img src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\inteligencia-artificial.png" class="logoHeader">
-    </header>
+  <img src="D:\Users\Charlie\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\Usuario.png" class="iniciosesion">
+
+  <div class="centro">
+    <h1>NEIA</h1>
+    <img src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\inteligencia-artificial.png" class="logoHeader">
+  </div>
+</header>
+
+<!-- Modal -->
+<div id="modalSesion" class="modal">
+  <div class="modal-contenido">
+    <span class="cerrar">&times;</span>
+
+    <!-- Formulario de registro -->
+    <div id="formRegistro" class="formulario activo">
+      <h2>Registrarse</h2>
+      <form>
+        <input type="text" placeholder="Nombre de usuario" required>
+        <input type="email" placeholder="Correo electrónico" required>
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit" class="btn">Crear cuenta</button>
+      </form>
+      <p class="cambio">¿Ya tienes una cuenta? <span id="mostrarLogin">Iniciar sesión</span></p>
+    </div>
+
+    <!-- Formulario de inicio de sesión -->
+    <div id="formLogin" class="formulario">
+      <h2>Iniciar sesión</h2>
+      <form>
+        <input type="text" placeholder="Nombre de usuario" required>
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit" class="btn">Entrar</button>
+      </form>
+      <p class="cambio">¿No tienes una cuenta? <span id="mostrarRegistro">Registrarse</span></p>
+    </div>
+  </div>
+</div>
+
+
+
 
   <div class="upload-box" onclick="abrirInput(event)">
 
