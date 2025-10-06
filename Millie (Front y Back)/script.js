@@ -38,20 +38,20 @@ function abrirInput(e) {
   const mostrarLogin = document.getElementById('mostrarLogin');
   const mostrarRegistro = document.getElementById('mostrarRegistro');
 
-  // Mostrar modal con formulario de registro por defecto
+
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
     formLogin.classList.remove('activo');
   });
 
-  // Cerrar modal
+  
   cerrar.addEventListener('click', () => modal.style.display = 'none');
   window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
   });
 
-  // Cambiar entre formularios
+  
   mostrarLogin.addEventListener('click', () => {
     formRegistro.classList.remove('activo');
     formLogin.classList.add('activo');
@@ -62,18 +62,18 @@ function abrirInput(e) {
     formRegistro.classList.add('activo');
   });
 
-  // --- FUNCIÓN PARA CREAR AVATAR ---
+  
   function crearAvatar(nombreUsuario) {
-    const iniciales = nombreUsuario.slice(0, 2).toUpperCase(); // primeras 2 letras
+    const iniciales = nombreUsuario.slice(0, 2).toUpperCase(); 
     const avatar = document.createElement('div');
     avatar.classList.add('avatar');
     avatar.textContent = iniciales;
 
-    // Reemplaza la imagen por el avatar
+    
     botonSesion.replaceWith(avatar);
   }
 
-  // --- Simular registro ---
+  
   const formRegistroForm = formRegistro.querySelector('form');
   formRegistroForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -84,7 +84,7 @@ function abrirInput(e) {
     }
   });
 
-  // --- Simular inicio de sesión ---
+  
   const formLoginForm = formLogin.querySelector('form');
   formLoginForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -120,7 +120,7 @@ formRegistroForm.addEventListener('submit', async (e) => {
   }
 });
 
-// Login
+
 formLoginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const nombre = formLoginForm.querySelector('input[type="text"]').value;
