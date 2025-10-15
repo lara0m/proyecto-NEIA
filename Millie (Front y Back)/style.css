@@ -13,13 +13,13 @@ header {
     height: 20%;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* distribuye izquierda - centro */
-    position: relative; /* necesario para centrar el bloque interno */
+    justify-content: space-between; 
+    position: relative; 
     text-align: center;
-    padding: 0 2vw; /* pequeño margen lateral */
+    padding: 0 2vw; 
 }
 
-/* bloque central con h1 + logo */
+
 .centro {
     display: flex;
     align-items: center;
@@ -43,7 +43,7 @@ h1 {
     height: 8vw;
 }
 
-/* imagen izquierda */
+
 .iniciosesion {
     width: 6vw;
     height: 6vw;
