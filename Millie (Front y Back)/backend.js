@@ -6,9 +6,9 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static('.')); // permite servir tu HTML local
 
 // Conexión a Neon
 const pool = new Pool({
@@ -20,7 +20,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// Crear tabla usuarios si no existe
+// Crear tabla si no existe
 pool.query(`
   CREATE TABLE IF NOT EXISTS usuarios (
     id SERIAL PRIMARY KEY,
@@ -28,17 +28,13 @@ pool.query(`
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL
   )
-`).then(() => console.log("Tabla 'usuarios' lista"))
-  .catch(err => console.error(err));
+`).then(() => console.log(" Tabla 'usuarios' lista"))
+  .catch(err => console.error(" Error creando tabla:", err));
 
-// ----------------------
-// Rutas
-// ----------------------
 
 // Registro
 app.post('/api/registro', async (req, res) => {
   const { nombre, email, password } = req.body;
-
   if (!nombre || !email || !password) {
     return res.status(400).json({ error: "Faltan datos" });
   }
@@ -48,18 +44,18 @@ app.post('/api/registro', async (req, res) => {
       'INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3) RETURNING id, nombre',
       [nombre, email, password]
     );
-    const usuario = result.rows[0];
-    res.json({ success: true, usuario });
+    console.log("Usuario registrado:", nombre);
+    res.json({ success: true, usuario: result.rows[0] });
   } catch (err) {
-    console.error(err);
+    console.error("Error registrando usuario:", err);
     res.status(500).json({ error: "Error al registrar usuario" });
   }
 });
 
+
 // Login
 app.post('/api/login', async (req, res) => {
   const { nombre, password } = req.body;
-
   if (!nombre || !password) {
     return res.status(400).json({ error: "Faltan datos" });
   }
@@ -72,15 +68,16 @@ app.post('/api/login', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(401).json({ error: "Usuario o contraseña incorrecta" });
     }
-    const usuario = result.rows[0];
-    res.json({ success: true, usuario });
+
+    console.log("Usuario inició sesión:", nombre);
+    res.json({ success: true, usuario: result.rows[0] });
   } catch (err) {
-    console.error(err);
+    console.error("Error al iniciar sesión:", err);
     res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });
 
-// Servidor
+
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(` Servidor corriendo en http://localhost:${port}`);
 });
