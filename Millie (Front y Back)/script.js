@@ -9,20 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistroForm = formRegistro.querySelector('form');
   const formLoginForm = formLogin.querySelector('form');
 
-  // abrir modal
+  // --- Abrir modal ---
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
     formLogin.classList.remove('activo');
   });
 
-  // cerrar modal
+  // --- Cerrar modal ---
   cerrar.addEventListener('click', () => modal.style.display = 'none');
   window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
   });
 
-  // cambiar entre login y registro
+  // --- Cambiar entre login y registro ---
   mostrarLogin.addEventListener('click', () => {
     formRegistro.classList.remove('activo');
     formLogin.classList.add('activo');
@@ -33,16 +33,48 @@ document.addEventListener('DOMContentLoaded', () => {
     formRegistro.classList.add('activo');
   });
 
-  // función para crear avatar
+  // --- Crear avatar con menú ---
   function crearAvatar(nombreUsuario) {
     const iniciales = nombreUsuario.slice(0, 2).toUpperCase();
+
+    const avatarContainer = document.createElement('div');
+    avatarContainer.classList.add('avatar-container');
+
     const avatar = document.createElement('div');
     avatar.classList.add('avatar');
     avatar.textContent = iniciales;
-    botonSesion.replaceWith(avatar);
+
+    const logoutMenu = document.createElement('div');
+    logoutMenu.classList.add('logout-menu');
+
+    const logoutBtn = document.createElement('button');
+    logoutBtn.textContent = 'Cerrar sesión';
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('usuario');
+      avatarContainer.replaceWith(botonSesion);
+      document.getElementById('btnHistorial').style.display = 'none';
+    });
+
+    logoutMenu.appendChild(logoutBtn);
+    avatarContainer.appendChild(avatar);
+    avatarContainer.appendChild(logoutMenu);
+
+    // Toggle menú al clickear avatar
+    avatar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logoutMenu.style.display =
+        logoutMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Ocultar menú si se hace click fuera
+    document.addEventListener('click', () => {
+      logoutMenu.style.display = 'none';
+    });
+
+    botonSesion.replaceWith(avatarContainer);
   }
 
-  // --- BOTÓN HISTORIAL ---
+  // --- Botón Historial ---
   function mostrarHistorial() {
     const btnHistorial = document.getElementById('btnHistorial');
     btnHistorial.style.display = 'block';
@@ -51,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- REGISTRO ---
+  // --- Registro ---
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formRegistroForm.querySelector('input[type="text"]').value;
@@ -66,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const data = await res.json();
       if (data.success) {
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
         crearAvatar(data.usuario.nombre);
         mostrarHistorial();
         modal.style.display = 'none';
@@ -78,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- LOGIN ---
+  // --- Login ---
   formLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formLoginForm.querySelector('input[type="text"]').value;
@@ -92,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const data = await res.json();
       if (data.success) {
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
         crearAvatar(data.usuario.nombre);
         mostrarHistorial();
         modal.style.display = 'none';
@@ -104,14 +138,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- FUNCIONES DE IMAGEN ---
-  window.abrirInput = function(e) {
+  // --- Mantener sesión iniciada ---
+  const usuarioGuardado = localStorage.getItem('usuario');
+  if (usuarioGuardado) {
+    const usuario = JSON.parse(usuarioGuardado);
+    crearAvatar(usuario.nombre);
+    mostrarHistorial();
+  }
+
+  // --- Funciones de imagen ---
+  window.abrirInput = function (e) {
     if (e.target.id !== "removeBtn") {
       document.getElementById("fileInput").click();
     }
   }
 
-  window.mostrarImagen = function(event) {
+  window.mostrarImagen = function (event) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -126,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  window.eliminarImagen = function(e) {
+  window.eliminarImagen = function (e) {
     e.stopPropagation();
     const preview = document.getElementById("preview");
     preview.src = "";
