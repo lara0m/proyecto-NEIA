@@ -255,3 +255,23 @@ input {
   .remove-btn:hover {
     transform: scale(1.2);
   }
+
+  #btnHistorial {
+    position: absolute; /* se posicionará relativo al contenedor padre con position: relative */
+    bottom: 190px;      /* justo debajo de la caja */
+    right: 80px;            /* alineado a la derecha de la caja */
+    background: none;
+    border: none;
+    color: #6A1B9A;
+    font-family: "Courier Prime", monospace;
+    font-size: 1em;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  #btnHistorial:hover {
+    text-decoration: underline;
+  }
+  
+  
+  

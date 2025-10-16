@@ -42,6 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
     botonSesion.replaceWith(avatar);
   }
 
+  // --- BOTÓN HISTORIAL ---
+  function mostrarHistorial() {
+    const btnHistorial = document.getElementById('btnHistorial');
+    btnHistorial.style.display = 'block';
+    btnHistorial.addEventListener('click', () => {
+      alert("Aquí iría la vista del historial del usuario");
+    });
+  }
+
   // --- REGISTRO ---
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -58,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if (data.success) {
         crearAvatar(data.usuario.nombre);
+        mostrarHistorial();
         modal.style.display = 'none';
       } else {
         alert(data.error);
@@ -83,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if (data.success) {
         crearAvatar(data.usuario.nombre);
+        mostrarHistorial();
         modal.style.display = 'none';
       } else {
         alert(data.error);
@@ -92,5 +103,36 @@ document.addEventListener('DOMContentLoaded', () => {
       alert("Error al conectar con el servidor");
     }
   });
-});
 
+  // --- FUNCIONES DE IMAGEN ---
+  window.abrirInput = function(e) {
+    if (e.target.id !== "removeBtn") {
+      document.getElementById("fileInput").click();
+    }
+  }
+
+  window.mostrarImagen = function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.querySelector(".icono").style.display = "none";
+        const preview = document.getElementById("preview");
+        preview.src = e.target.result;
+        preview.style.display = "block";
+        document.getElementById("removeBtn").style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  window.eliminarImagen = function(e) {
+    e.stopPropagation();
+    const preview = document.getElementById("preview");
+    preview.src = "";
+    preview.style.display = "none";
+    document.querySelector(".icono").style.display = "block";
+    document.getElementById("removeBtn").style.display = "none";
+    document.getElementById("fileInput").value = "";
+  }
+});
