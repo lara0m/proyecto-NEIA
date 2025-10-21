@@ -8,9 +8,9 @@ const port = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('.')); // permite servir tu HTML local
+app.use(express.static('.')); 
 
-// Conexión a Neon
+
 const pool = new Pool({
   host: 'ep-steep-boat-acdiqbkj-pooler.sa-east-1.aws.neon.tech',
   database: 'neondb',
@@ -20,7 +20,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// Crear tabla si no existe
+
 pool.query(`
   CREATE TABLE IF NOT EXISTS usuarios (
     id SERIAL PRIMARY KEY,
@@ -32,7 +32,7 @@ pool.query(`
   .catch(err => console.error(" Error creando tabla:", err));
 
 
-// Registro
+
 app.post('/api/registro', async (req, res) => {
   const { nombre, email, password } = req.body;
   if (!nombre || !email || !password) {
@@ -53,7 +53,7 @@ app.post('/api/registro', async (req, res) => {
 });
 
 
-// Login
+
 app.post('/api/login', async (req, res) => {
   const { nombre, password } = req.body;
   if (!nombre || !password) {
