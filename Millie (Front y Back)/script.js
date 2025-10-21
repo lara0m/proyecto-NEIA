@@ -9,20 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistroForm = formRegistro.querySelector('form');
   const formLoginForm = formLogin.querySelector('form');
 
-  // --- Abrir modal ---
+  
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
     formLogin.classList.remove('activo');
   });
 
-  // --- Cerrar modal ---
+  
   cerrar.addEventListener('click', () => modal.style.display = 'none');
   window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
   });
 
-  // --- Cambiar entre login y registro ---
+  
   mostrarLogin.addEventListener('click', () => {
     formRegistro.classList.remove('activo');
     formLogin.classList.add('activo');
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formRegistro.classList.add('activo');
   });
 
-  // --- Crear avatar con menú ---
+  
   function crearAvatar(nombreUsuario) {
     const iniciales = nombreUsuario.slice(0, 2).toUpperCase();
 
@@ -59,14 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
     avatarContainer.appendChild(avatar);
     avatarContainer.appendChild(logoutMenu);
 
-    // Toggle menú al clickear avatar
+    
     avatar.addEventListener('click', (e) => {
       e.stopPropagation();
       logoutMenu.style.display =
         logoutMenu.style.display === 'block' ? 'none' : 'block';
     });
 
-    // Ocultar menú si se hace click fuera
+    
     document.addEventListener('click', () => {
       logoutMenu.style.display = 'none';
     });
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     botonSesion.replaceWith(avatarContainer);
   }
 
-  // --- Botón Historial ---
+  
   function mostrarHistorial() {
     const btnHistorial = document.getElementById('btnHistorial');
     btnHistorial.style.display = 'block';
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Registro ---
+  
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formRegistroForm.querySelector('input[type="text"]').value;
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- Login ---
+ 
   formLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formLoginForm.querySelector('input[type="text"]').value;
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- Mantener sesión iniciada ---
+  
   const usuarioGuardado = localStorage.getItem('usuario');
   if (usuarioGuardado) {
     const usuario = JSON.parse(usuarioGuardado);
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarHistorial();
   }
 
-  // --- Funciones de imagen ---
+  
   window.abrirInput = function (e) {
     if (e.target.id !== "removeBtn") {
       document.getElementById("fileInput").click();

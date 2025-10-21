@@ -259,9 +259,9 @@ input {
   }
 
   #btnHistorial {
-    position: absolute; /* se posicionará relativo al contenedor padre con position: relative */
-    bottom: 190px;      /* justo debajo de la caja */
-    right: 80px;            /* alineado a la derecha de la caja */
+    position: absolute; 
+    bottom: 190px;      
+    right: 80px;            
     background: none;
     border: none;
     color: #6A1B9A;
