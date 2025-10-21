@@ -82,3 +82,4 @@ app.listen(port, () => {
   console.log(` Servidor corriendo en http://localhost:${port}`);
 });
 
+// cd "C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (front y back)"
