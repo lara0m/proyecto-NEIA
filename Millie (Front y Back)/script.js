@@ -77,13 +77,27 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function mostrarHistorial() {
     const btnHistorial = document.getElementById('btnHistorial');
+    const modalHistorial = document.getElementById('modalHistorial');
+    const cerrarHistorial = document.querySelector('.cerrar-historial');
+  
     btnHistorial.style.display = 'block';
+  
     btnHistorial.addEventListener('click', () => {
-      alert("Aquí iría la vista del historial del usuario");
+      modalHistorial.style.display = 'flex';
+    });
+  
+    cerrarHistorial.addEventListener('click', () => {
+      modalHistorial.style.display = 'none';
+    });
+  
+    window.addEventListener('click', (e) => {
+      if (e.target === modalHistorial) {
+        modalHistorial.style.display = 'none';
+      }
     });
   }
-
   
+
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formRegistroForm.querySelector('input[type="text"]').value;
@@ -176,5 +190,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector(".icono").style.display = "block";
     document.getElementById("removeBtn").style.display = "none";
     document.getElementById("fileInput").value = "";
+  }
+});
+
+// ===== MODAL HISTORIAL =====
+const modalHistorial = document.getElementById("modalHistorial");
+const cerrarHistorial = document.querySelector(".cerrar-historial");
+const btnHistorial = document.getElementById("btnHistorial");
+
+btnHistorial.addEventListener("click", () => {
+  modalHistorial.style.display = "flex";
+});
+
+cerrarHistorial.addEventListener("click", () => {
+  modalHistorial.style.display = "none";
+});
+
+window.addEventListener("click", (e) => {
+  if (e.target === modalHistorial) {
+    modalHistorial.style.display = "none";
   }
 });
