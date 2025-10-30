@@ -410,8 +410,8 @@ input {
 }
 
 .btn.violeta {
-  background-color: #6A1B9A;
-  color: white;
+  background-color: #ffffff;
+  color: #6A1B9A;
   padding: 10px 25px;
   border: none;
   border-radius: 10px;
@@ -429,7 +429,7 @@ input {
   background-color: white;
   color: #6A1B9A;
   padding: 10px 25px;
-  border: 2px solid #6A1B9A;
+  border: 2px solid #ffffff;
   border-radius: 10px;
   cursor: pointer;
   font-family: "Courier Prime", monospace;

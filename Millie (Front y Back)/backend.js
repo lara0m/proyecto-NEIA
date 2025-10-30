@@ -1,3 +1,9 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = 'https://fmdvxhacabhvvtaivqsq.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtZHZ4aGFjYWJodnZ0YWl2cXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4MTg5NjgsImV4cCI6MjA3NzM5NDk2OH0.gr8M-7W8Dv2L-gObzxuI6VqbbWbWaPb2uWom6Fdo95E'
+export const supabase = createClient(supabaseUrl, supabaseKey)
+
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
@@ -30,6 +36,18 @@ pool.query(`
   )
 `).then(() => console.log(" Tabla 'usuarios' lista"))
   .catch(err => console.error(" Error creando tabla:", err));
+
+  pool.query(`
+  CREATE TABLE IF NOT EXISTS analisis (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+    imagen_url TEXT NOT NULL,
+    resultado TEXT NOT NULL,
+    fecha TIMESTAMP DEFAULT NOW()
+  )
+`).then(() => console.log(" Tabla 'analisis' lista"))
+  .catch(err => console.error(" Error creando tabla:", err));
+
 
 
 
@@ -76,6 +94,26 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });
+
+app.post('/api/guardar-analisis', async (req, res) => {
+  const { usuario_id, imagen_url, resultado } = req.body;
+
+  if (!usuario_id || !imagen_url || !resultado) {
+    return res.status(400).json({ error: "Faltan datos" });
+  }
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO analisis (usuario_id, imagen_url, resultado) VALUES ($1, $2, $3) RETURNING *',
+      [usuario_id, imagen_url, resultado]
+    );
+    res.json({ success: true, analisis: result.rows[0] });
+  } catch (err) {
+    console.error("Error guardando análisis:", err);
+    res.status(500).json({ error: "Error al guardar análisis" });
+  }
+});
+
 
 
 app.listen(port, () => {

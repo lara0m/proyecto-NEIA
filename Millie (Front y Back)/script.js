@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistroForm = formRegistro.querySelector('form');
   const formLoginForm = formLogin.querySelector('form');
 
+  const SUPABASE_URL = 'https://fmdvxhacabhvvtaivqsq.supabase.co'; // reemplazá con el tuyo
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZtZHZ4aGFjYWJodnZ0YWl2cXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4MTg5NjgsImV4cCI6MjA3NzM5NDk2OH0.gr8M-7W8Dv2L-gObzxuI6VqbbWbWaPb2uWom6Fdo95E'; // API key del proyecto (anon public)
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
+
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
