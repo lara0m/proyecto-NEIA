@@ -371,3 +371,72 @@ input {
   text-align: center;
   margin-bottom: 1vw;
 }
+
+/* 🔹 MODAL DE CONFIRMACIÓN */
+.modal-confirmacion {
+  display: none;
+  position: fixed;
+  z-index: 3000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.confirmacion-contenido {
+  background-color: #7a4da3;
+  color: #fff;
+  font-family: "Courier Prime", monospace;
+  text-align: center;
+  padding: 3vw;
+  border-radius: 20px;
+  width: 35vw;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  animation: aparecer 0.3s ease;
+}
+
+.confirmacion-contenido h2 {
+  font-size: 1.5vw;
+  margin-bottom: 2vw;
+}
+
+.botones-confirmacion {
+  display: flex;
+  justify-content: center;
+  gap: 2vw;
+}
+
+.btn.violeta {
+  background-color: #6A1B9A;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Courier Prime", monospace;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.btn.violeta:hover {
+  background-color: #4A148C;
+}
+
+.btn.blanco {
+  background-color: white;
+  color: #6A1B9A;
+  padding: 10px 25px;
+  border: 2px solid #6A1B9A;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Courier Prime", monospace;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.btn.blanco:hover {
+  background-color: #f3e5f5;
+}

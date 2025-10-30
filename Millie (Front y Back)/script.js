@@ -9,20 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistroForm = formRegistro.querySelector('form');
   const formLoginForm = formLogin.querySelector('form');
 
-  
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
     formLogin.classList.remove('activo');
   });
 
-  
   cerrar.addEventListener('click', () => modal.style.display = 'none');
+
   window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
   });
 
-  
   mostrarLogin.addEventListener('click', () => {
     formRegistro.classList.remove('activo');
     formLogin.classList.add('activo');
@@ -33,10 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     formRegistro.classList.add('activo');
   });
 
-  
   function crearAvatar(nombreUsuario) {
     const iniciales = nombreUsuario.slice(0, 2).toUpperCase();
-
     const avatarContainer = document.createElement('div');
     avatarContainer.classList.add('avatar-container');
 
@@ -59,14 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     avatarContainer.appendChild(avatar);
     avatarContainer.appendChild(logoutMenu);
 
-    
     avatar.addEventListener('click', (e) => {
       e.stopPropagation();
-      logoutMenu.style.display =
-        logoutMenu.style.display === 'block' ? 'none' : 'block';
+      logoutMenu.style.display = logoutMenu.style.display === 'block' ? 'none' : 'block';
     });
 
-    
     document.addEventListener('click', () => {
       logoutMenu.style.display = 'none';
     });
@@ -74,29 +67,25 @@ document.addEventListener('DOMContentLoaded', () => {
     botonSesion.replaceWith(avatarContainer);
   }
 
-  
   function mostrarHistorial() {
     const btnHistorial = document.getElementById('btnHistorial');
     const modalHistorial = document.getElementById('modalHistorial');
     const cerrarHistorial = document.querySelector('.cerrar-historial');
-  
+
     btnHistorial.style.display = 'block';
-  
+
     btnHistorial.addEventListener('click', () => {
       modalHistorial.style.display = 'flex';
     });
-  
+
     cerrarHistorial.addEventListener('click', () => {
       modalHistorial.style.display = 'none';
     });
-  
+
     window.addEventListener('click', (e) => {
-      if (e.target === modalHistorial) {
-        modalHistorial.style.display = 'none';
-      }
+      if (e.target === modalHistorial) modalHistorial.style.display = 'none';
     });
   }
-  
 
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -125,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
- 
   formLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formLoginForm.querySelector('input[type="text"]').value;
@@ -152,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  
   const usuarioGuardado = localStorage.getItem('usuario');
   if (usuarioGuardado) {
     const usuario = JSON.parse(usuarioGuardado);
@@ -160,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarHistorial();
   }
 
-  
+  // ======== IMAGEN ========
   window.abrirInput = function (e) {
     if (e.target.id !== "removeBtn") {
       document.getElementById("fileInput").click();
@@ -185,29 +172,55 @@ document.addEventListener('DOMContentLoaded', () => {
   window.eliminarImagen = function (e) {
     e.stopPropagation();
     const preview = document.getElementById("preview");
+    if (preview.src && preview.style.display === "block") {
+      const modalConfirmacion = document.getElementById("modalConfirmacion");
+      modalConfirmacion.style.display = "flex";
+
+      const btnGuardar = document.getElementById("btnGuardar");
+      const btnNoGuardar = document.getElementById("btnNoGuardar");
+
+      btnNoGuardar.onclick = () => {
+        modalConfirmacion.style.display = "none";
+        limpiarImagen();
+      }
+
+      btnGuardar.onclick = () => {
+        modalConfirmacion.style.display = "none";
+        limpiarImagen();
+        console.log("Imagen guardada en historial (simulado)");
+      }
+
+      window.onclick = (event) => {
+        if (event.target === modalConfirmacion) {
+          modalConfirmacion.style.display = "none";
+        }
+      }
+    }
+  }
+
+  function limpiarImagen() {
+    const preview = document.getElementById("preview");
     preview.src = "";
     preview.style.display = "none";
     document.querySelector(".icono").style.display = "block";
     document.getElementById("removeBtn").style.display = "none";
     document.getElementById("fileInput").value = "";
   }
-});
 
-// ===== MODAL HISTORIAL =====
-const modalHistorial = document.getElementById("modalHistorial");
-const cerrarHistorial = document.querySelector(".cerrar-historial");
-const btnHistorial = document.getElementById("btnHistorial");
+  // ===== MODAL HISTORIAL =====
+  const modalHistorial = document.getElementById("modalHistorial");
+  const cerrarHistorial = document.querySelector(".cerrar-historial");
+  const btnHistorial = document.getElementById("btnHistorial");
 
-btnHistorial.addEventListener("click", () => {
-  modalHistorial.style.display = "flex";
-});
+  btnHistorial.addEventListener("click", () => {
+    modalHistorial.style.display = "flex";
+  });
 
-cerrarHistorial.addEventListener("click", () => {
-  modalHistorial.style.display = "none";
-});
-
-window.addEventListener("click", (e) => {
-  if (e.target === modalHistorial) {
+  cerrarHistorial.addEventListener("click", () => {
     modalHistorial.style.display = "none";
-  }
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === modalHistorial) modalHistorial.style.display = "none";
+  });
 });
