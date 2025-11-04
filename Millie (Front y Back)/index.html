@@ -45,10 +45,11 @@
     </div>
   </div>
 
-  <div class="upload-box" onclick="abrirInput(event)">
+  <div class="upload-box" onclick="abrirInputArchivo(event)">
     <img class="icono" src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\cargarimagen.png" alt="Upload">
-    <img id="preview" class="preview">
-    <button id="removeBtn" class="remove-btn" onclick="eliminarImagen(event)">×</button>
+    <span id="fileName" class="preview"></span>
+    <button id="removeBtn" class="remove-btn" onclick="eliminarArchivo(event)">×</button>
+    <input type="file" id="fileInput" style="display: none;">
   </div>
 
   <button id="btnHistorial" class="btnHistorial" style="display: none;">HISTORIAL</button>

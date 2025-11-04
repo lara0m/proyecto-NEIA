@@ -9,20 +9,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistroForm = formRegistro.querySelector('form');
   const formLoginForm = formLogin.querySelector('form');
 
-  
+  // === ABRIR Y CERRAR MODAL DE SESIÓN ===
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
     formLogin.classList.remove('activo');
   });
 
-  
   cerrar.addEventListener('click', () => modal.style.display = 'none');
   window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
   });
 
-  
+  // === CAMBIAR ENTRE LOGIN Y REGISTRO ===
   mostrarLogin.addEventListener('click', () => {
     formRegistro.classList.remove('activo');
     formLogin.classList.add('activo');
@@ -33,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formRegistro.classList.add('activo');
   });
 
-  
+  // === CREAR AVATAR Y LOGOUT ===
   function crearAvatar(nombreUsuario) {
     const iniciales = nombreUsuario.slice(0, 2).toUpperCase();
 
@@ -59,14 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
     avatarContainer.appendChild(avatar);
     avatarContainer.appendChild(logoutMenu);
 
-    
     avatar.addEventListener('click', (e) => {
       e.stopPropagation();
       logoutMenu.style.display =
         logoutMenu.style.display === 'block' ? 'none' : 'block';
     });
 
-    
     document.addEventListener('click', () => {
       logoutMenu.style.display = 'none';
     });
@@ -74,30 +71,30 @@ document.addEventListener('DOMContentLoaded', () => {
     botonSesion.replaceWith(avatarContainer);
   }
 
-  
+  // === MOSTRAR MODAL DE HISTORIAL ===
   function mostrarHistorial() {
     const btnHistorial = document.getElementById('btnHistorial');
     const modalHistorial = document.getElementById('modalHistorial');
     const cerrarHistorial = document.querySelector('.cerrar-historial');
-  
+
     btnHistorial.style.display = 'block';
-  
+
     btnHistorial.addEventListener('click', () => {
       modalHistorial.style.display = 'flex';
     });
-  
+
     cerrarHistorial.addEventListener('click', () => {
       modalHistorial.style.display = 'none';
     });
-  
+
     window.addEventListener('click', (e) => {
       if (e.target === modalHistorial) {
         modalHistorial.style.display = 'none';
       }
     });
   }
-  
 
+  // === REGISTRO ===
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formRegistroForm.querySelector('input[type="text"]').value;
@@ -125,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
- 
+  // === LOGIN ===
   formLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formLoginForm.querySelector('input[type="text"]').value;
@@ -152,44 +149,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  
+  // === SI YA HAY SESIÓN GUARDADA ===
   const usuarioGuardado = localStorage.getItem('usuario');
   if (usuarioGuardado) {
     const usuario = JSON.parse(usuarioGuardado);
     crearAvatar(usuario.nombre);
     mostrarHistorial();
-  }
-
-  
-  window.abrirInput = function (e) {
-    if (e.target.id !== "removeBtn") {
-      document.getElementById("fileInput").click();
-    }
-  }
-
-  window.mostrarImagen = function (event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        document.querySelector(".icono").style.display = "none";
-        const preview = document.getElementById("preview");
-        preview.src = e.target.result;
-        preview.style.display = "block";
-        document.getElementById("removeBtn").style.display = "block";
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  window.eliminarImagen = function (e) {
-    e.stopPropagation();
-    const preview = document.getElementById("preview");
-    preview.src = "";
-    preview.style.display = "none";
-    document.querySelector(".icono").style.display = "block";
-    document.getElementById("removeBtn").style.display = "none";
-    document.getElementById("fileInput").value = "";
   }
 });
 
@@ -211,3 +176,31 @@ window.addEventListener("click", (e) => {
     modalHistorial.style.display = "none";
   }
 });
+
+// ===== FUNCIONES NUEVAS PARA SUBIR ARCHIVOS =====
+function abrirInputArchivo(event) {
+  event.stopPropagation();
+  const fileInput = event.currentTarget.querySelector('#fileInput');
+  fileInput.click();
+
+  fileInput.onchange = () => {
+    const file = fileInput.files[0];
+    const fileNameSpan = event.currentTarget.querySelector('#fileName');
+    if (file) {
+      fileNameSpan.textContent = file.name;
+      fileNameSpan.style.display = "block";
+    }
+  };
+}
+
+function eliminarArchivo(event) {
+  event.stopPropagation();
+  const uploadBox = event.currentTarget.closest('.upload-box');
+  const fileInput = uploadBox.querySelector('#fileInput');
+  const fileNameSpan = uploadBox.querySelector('#fileName');
+
+  fileInput.value = "";
+  fileNameSpan.textContent = "";
+  fileNameSpan.style.display = "none";
+}
+
