@@ -82,8 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
     btnHistorial.style.display = 'block';
   
-    btnHistorial.addEventListener('click', () => {
+    btnHistorial.addEventListener('click', async () => {
       modalHistorial.style.display = 'flex';
+      await cargarHistorial();
     });
   
     cerrarHistorial.addEventListener('click', () => {
@@ -95,6 +96,58 @@ document.addEventListener('DOMContentLoaded', () => {
         modalHistorial.style.display = 'none';
       }
     });
+  }
+
+  // Función para cargar el historial desde el servidor
+  async function cargarHistorial() {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario || !usuario.id) return;
+
+    try {
+      const response = await fetch(`/api/historial/${usuario.id}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        mostrarHistorialEnModal(data.historial);
+      } else {
+        console.error("Error cargando historial:", data.error);
+      }
+    } catch (error) {
+      console.error("Error de conexión al cargar historial:", error);
+    }
+  }
+
+  // Función para mostrar el historial en el modal
+  function mostrarHistorialEnModal(historial) {
+    const historialLista = document.getElementById('historialLista');
+    
+    if (historial.length === 0) {
+      historialLista.innerHTML = '<p>No hay análisis previos</p>';
+      return;
+    }
+    
+    historialLista.innerHTML = historial.map(item => {
+      const fecha = new Date(item.fecha_analisis).toLocaleString();
+      const confianza = (item.confianza * 100).toFixed(1);
+      
+      let colorClass = '';
+      if (item.sentimiento.toLowerCase().includes('positivo')) {
+        colorClass = 'resultado-positivo';
+      } else if (item.sentimiento.toLowerCase().includes('negativo')) {
+        colorClass = 'resultado-negativo';
+      } else {
+        colorClass = 'resultado-neutro';
+      }
+      
+      return `
+        <div class="historial-item">
+          <div class="historial-archivo">📄 ${item.archivo_nombre}</div>
+          <div class="historial-resultado ${colorClass}">${item.sentimiento}</div>
+          <div class="historial-confianza">${confianza}%</div>
+          <div class="historial-fecha">${fecha}</div>
+        </div>
+      `;
+    }).join('');
   }
   
 
@@ -167,29 +220,108 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  window.mostrarImagen = function (event) {
+  window.mostrarArchivo = function (event) {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        document.querySelector(".icono").style.display = "none";
-        const preview = document.getElementById("preview");
-        preview.src = e.target.result;
-        preview.style.display = "block";
-        document.getElementById("removeBtn").style.display = "block";
-      };
-      reader.readAsDataURL(file);
+      // Verificar que es un archivo CSV
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        alert('Por favor selecciona un archivo CSV válido');
+        return;
+      }
+      
+      document.querySelector(".icono").style.display = "none";
+      const fileInfo = document.getElementById("file-info");
+      const fileName = document.getElementById("file-name");
+      const fileSize = document.getElementById("file-size");
+      
+      fileName.textContent = `📄 ${file.name}`;
+      fileSize.textContent = `📊 ${(file.size / 1024).toFixed(1)} KB`;
+      
+      fileInfo.style.display = "block";
+      document.getElementById("removeBtn").style.display = "block";
     }
   }
 
-  window.eliminarImagen = function (e) {
+  window.eliminarArchivo = function (e) {
     e.stopPropagation();
-    const preview = document.getElementById("preview");
-    preview.src = "";
-    preview.style.display = "none";
+    const fileInfo = document.getElementById("file-info");
+    fileInfo.style.display = "none";
     document.querySelector(".icono").style.display = "block";
     document.getElementById("removeBtn").style.display = "none";
     document.getElementById("fileInput").value = "";
+    
+    // Limpiar resultados
+    document.getElementById("resultado-text").textContent = "(sube un archivo CSV con datos EEG)";
+    document.getElementById("confianza-text").style.display = "none";
+  }
+
+  // Función para analizar EEG
+  window.analizarEEG = async function() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+    
+    if (!file) {
+      alert("Por favor selecciona un archivo CSV con datos EEG");
+      return;
+    }
+    
+    const loading = document.getElementById("loading");
+    const resultadoText = document.getElementById("resultado-text");
+    const confianzaText = document.getElementById("confianza-text");
+    
+    // Mostrar loading
+    loading.style.display = "block";
+    resultadoText.textContent = "Procesando...";
+    confianzaText.style.display = "none";
+    
+    try {
+      const formData = new FormData();
+      formData.append('eegFile', file);
+      
+      // Agregar información del usuario si está logueado
+      const usuario = localStorage.getItem('usuario');
+      if (usuario) {
+        formData.append('usuario', usuario);
+      }
+      
+      const response = await fetch('/api/analizar-eeg', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        resultadoText.textContent = data.resultado;
+        confianzaText.textContent = `Confianza: ${(data.confianza * 100).toFixed(1)}%`;
+        confianzaText.style.display = "block";
+        
+        // Cambiar color según el resultado
+        if (data.resultado.toLowerCase().includes('positivo')) {
+          resultadoText.style.color = '#4CAF50';
+        } else if (data.resultado.toLowerCase().includes('negativo')) {
+          resultadoText.style.color = '#f44336';
+        } else {
+          resultadoText.style.color = '#FF9800';
+        }
+        
+        console.log("✅ Análisis completado:", data);
+      } else {
+        resultadoText.textContent = "Error en el análisis";
+        resultadoText.style.color = '#f44336';
+        confianzaText.style.display = "none";
+        alert(data.error || "Error procesando el archivo");
+      }
+      
+    } catch (error) {
+      console.error("❌ Error:", error);
+      resultadoText.textContent = "Error de conexión";
+      resultadoText.style.color = '#f44336';
+      confianzaText.style.display = "none";
+      alert("Error de conexión con el servidor");
+    } finally {
+      loading.style.display = "none";
+    }
   }
 });
 

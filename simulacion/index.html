@@ -54,9 +54,12 @@
 
     <img class="icono" src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\cargarimagen.png" alt="Upload">
 
-    <img id="preview" class="preview">
+    <div id="file-info" class="file-info" style="display: none;">
+      <p id="file-name"></p>
+      <p id="file-size"></p>
+    </div>
 
-    <button id="removeBtn" class="remove-btn" onclick="eliminarImagen(event)">×</button>
+    <button id="removeBtn" class="remove-btn" onclick="eliminarArchivo(event)" style="display: none;">×</button>
   </div>
 
   <button id="btnHistorial" class="btnHistorial" style="display: none;">HISTORIAL</button>
@@ -72,18 +75,24 @@
 </div>
 
 
-  <input type="file" id="fileInput" accept="image/*" style="display: none" onchange="mostrarImagen(event)">
+  <input type="file" id="fileInput" accept=".csv,text/csv" style="display: none" onchange="mostrarArchivo(event)">
 
     <div class="boton">
-    <button class="botonIniciar">ANALIZAR</button>
+    <button class="botonIniciar" onclick="analizarEEG()">ANALIZAR</button>
+    </div>
+
+    <div class="loading" id="loading" style="display: none;">
+        <h2>Analizando señales EEG...</h2>
+        <div class="spinner"></div>
     </div>
 
     <div class="persona">
-        <h2>La persona quiere decir: </h2>
+        <h2>Estado emocional detectado: </h2>
     </div>
 
     <div class="resultado">
-        <h2>(resultado)</h2>
+        <h2 id="resultado-text">(sube un archivo CSV con datos EEG)</h2>
+        <p id="confianza-text" style="display: none;"></p>
     </div>
 
 </body>
