@@ -56,6 +56,30 @@
  <input type="file" id="fileInput" style="display: none;">
 </div>
 
+<!-- MODAL CONFIRMACIÓN -->
+<div id="modalConfirmacion" class="modal-confirmacion">
+  <div class="confirmacion-contenido">
+    <h2>¿Deseas guardar el análisis en tu historial?</h2>
+    <div class="botones-confirmacion">
+      <button id="btnGuardarAnalisis" class="btn violeta">Guardar</button>
+      <button id="btnNoGuardar" class="btn blanco">No guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FORMULARIO GUARDAR -->
+<div id="modalGuardar" class="modal-guardar">
+  <div class="contenido-guardar">
+    <span class="cerrar-guardar">&times;</span>
+    <h2>Guardar análisis</h2>
+    <div class="archivo-info" id="infoArchivo"></div>
+    <input type="text" id="nombreAnalisis" placeholder="Nombre del análisis">
+    <input type="text" id="descripcionAnalisis" placeholder="Descripción (opcional)">
+    <button class="btn-guardar" id="btnGuardarFinal">Guardar</button>
+  </div>
+</div>
+
+
 
   <button id="btnHistorial" class="btnHistorial" style="display: none;">HISTORIAL</button>
 

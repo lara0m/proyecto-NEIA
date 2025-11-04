@@ -249,3 +249,81 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// === MODALES DE GUARDADO ===
+document.addEventListener('DOMContentLoaded', () => {
+  const modalConfirmacion = document.getElementById('modalConfirmacion');
+  const btnGuardarAnalisis = document.getElementById('btnGuardarAnalisis');
+  const btnNoGuardar = document.getElementById('btnNoGuardar');
+
+  const modalGuardar = document.getElementById('modalGuardar');
+  const cerrarGuardar = document.querySelector('.cerrar-guardar');
+  const infoArchivo = document.getElementById('infoArchivo');
+  const resultadoTexto = document.querySelector('.resultado h2');
+  const btnGuardarFinal = document.getElementById('btnGuardarFinal');
+
+  const fileInput = document.getElementById('fileInput');
+  const preview = document.getElementById('preview');
+  const fileNameSpan = document.getElementById('fileName');
+  const icono = document.querySelector('.icono');
+  const removeBtn = document.getElementById('removeBtn');
+
+  // Interceptar la función eliminarArchivo
+  window.eliminarArchivo = function (event) {
+    event.stopPropagation();
+
+    const usuario = localStorage.getItem('usuario');
+    if (usuario) {
+      modalConfirmacion.style.display = 'flex';
+    } else {
+      volverEstadoInicial();
+    }
+  };
+
+  // Botón "No guardar"
+  btnNoGuardar.addEventListener('click', () => {
+    modalConfirmacion.style.display = 'none';
+    volverEstadoInicial();
+  });
+
+  // Botón "Guardar"
+  btnGuardarAnalisis.addEventListener('click', () => {
+    modalConfirmacion.style.display = 'none';
+
+    const nombreArchivo = fileInput.files[0]?.name || 'Sin archivo';
+    const resultado = resultadoTexto ? resultadoTexto.textContent : '(resultado)';
+    infoArchivo.innerHTML = `
+      <p><strong>Archivo:</strong> ${nombreArchivo}</p>
+      <p><strong>Resultado:</strong> ${resultado}</p>
+    `;
+    modalGuardar.style.display = 'flex';
+  });
+
+  // Cerrar modal guardar con la X
+  cerrarGuardar.addEventListener('click', () => {
+    modalGuardar.style.display = 'none';
+    volverEstadoInicial();
+  });
+
+  // Botón final "Guardar" (por ahora no hace nada)
+  btnGuardarFinal.addEventListener('click', () => {
+    modalGuardar.style.display = 'none';
+    volverEstadoInicial();
+  });
+
+  // Si se hace click afuera, cerrar modales
+  window.addEventListener('click', (e) => {
+    if (e.target === modalConfirmacion) modalConfirmacion.style.display = 'none';
+    if (e.target === modalGuardar) modalGuardar.style.display = 'none';
+  });
+
+  // Función de reset (reutiliza tu lógica)
+  function volverEstadoInicial() {
+    fileInput.value = '';
+    preview.src = '';
+    preview.style.display = 'none';
+    fileNameSpan.textContent = '';
+    fileNameSpan.style.display = 'none';
+    icono.style.display = 'block';
+    removeBtn.style.display = 'none';
+  }
+});
