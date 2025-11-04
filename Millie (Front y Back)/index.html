@@ -45,12 +45,17 @@
     </div>
   </div>
 
-  <div class="upload-box" onclick="abrirInputArchivo(event)">
-    <img class="icono" src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\cargarimagen.png" alt="Upload">
-    <span id="fileName" class="preview"></span>
-    <button id="removeBtn" class="remove-btn" onclick="eliminarArchivo(event)">×</button>
-    <input type="file" id="fileInput" style="display: none;">
-  </div>
+  
+<div class="upload-box" onclick="abrirInputArchivo(event)">
+  <img class="icono" src="C:\\Users\\49006614\\Documents\\GitHub\\proyecto-NEIA\\Millie (Front y Back)\\cargarimagen.png" alt="Upload">
+  
+  <img id="preview" class="preview" style="display: none;" alt="Preview">
+  
+  <span id="fileName" class="preview-file" style="display: none;"></span>
+  <button id="removeBtn" class="remove-btn" style="display: none;" onclick="eliminarArchivo(event)">×</button>
+ <input type="file" id="fileInput" style="display: none;">
+</div>
+
 
   <button id="btnHistorial" class="btnHistorial" style="display: none;">HISTORIAL</button>
 
@@ -62,16 +67,7 @@
     </div>
   </div>
 
-  <!-- 🔹 NUEVO MODAL DE CONFIRMACIÓN -->
-  <div id="modalConfirmacion" class="modal-confirmacion">
-    <div class="confirmacion-contenido">
-      <h2>¿Deseas guardar la información en tu historial?</h2>
-      <div class="botones-confirmacion">
-        <button id="btnGuardar" class="btn violeta">Guardar</button>
-        <button id="btnNoGuardar" class="btn blanco">No guardar</button>
-      </div>
-    </div>
-  </div>
+
 
   <input type="file" id="fileInput" accept="image/*" style="display: none" onchange="mostrarImagen(event)">
 

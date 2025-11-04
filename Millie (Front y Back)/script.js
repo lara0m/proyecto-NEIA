@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistroForm = formRegistro.querySelector('form');
   const formLoginForm = formLogin.querySelector('form');
 
-  // === ABRIR Y CERRAR MODAL DE SESIÓN ===
+  
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === modal) modal.style.display = 'none';
   });
 
-  // === CAMBIAR ENTRE LOGIN Y REGISTRO ===
+  
   mostrarLogin.addEventListener('click', () => {
     formRegistro.classList.remove('activo');
     formLogin.classList.add('activo');
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formRegistro.classList.add('activo');
   });
 
-  // === CREAR AVATAR Y LOGOUT ===
+  
   function crearAvatar(nombreUsuario) {
     const iniciales = nombreUsuario.slice(0, 2).toUpperCase();
 
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     botonSesion.replaceWith(avatarContainer);
   }
 
-  // === MOSTRAR MODAL DE HISTORIAL ===
+  
   function mostrarHistorial() {
     const btnHistorial = document.getElementById('btnHistorial');
     const modalHistorial = document.getElementById('modalHistorial');
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === REGISTRO ===
+  
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formRegistroForm.querySelector('input[type="text"]').value;
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // === LOGIN ===
+  
   formLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formLoginForm.querySelector('input[type="text"]').value;
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // === SI YA HAY SESIÓN GUARDADA ===
+  
   const usuarioGuardado = localStorage.getItem('usuario');
   if (usuarioGuardado) {
     const usuario = JSON.parse(usuarioGuardado);
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ===== MODAL HISTORIAL =====
+
 const modalHistorial = document.getElementById("modalHistorial");
 const cerrarHistorial = document.querySelector(".cerrar-historial");
 const btnHistorial = document.getElementById("btnHistorial");
@@ -177,30 +177,75 @@ window.addEventListener("click", (e) => {
   }
 });
 
-// ===== FUNCIONES NUEVAS PARA SUBIR ARCHIVOS =====
-function abrirInputArchivo(event) {
-  event.stopPropagation();
-  const fileInput = event.currentTarget.querySelector('#fileInput');
-  fileInput.click();
+document.addEventListener('DOMContentLoaded', () => {
+  
+  const uploadBox = document.querySelector('.upload-box');
+  if (!uploadBox) return;
 
-  fileInput.onchange = () => {
-    const file = fileInput.files[0];
-    const fileNameSpan = event.currentTarget.querySelector('#fileName');
-    if (file) {
-      fileNameSpan.textContent = file.name;
-      fileNameSpan.style.display = "block";
-    }
-  };
-}
-
-function eliminarArchivo(event) {
-  event.stopPropagation();
-  const uploadBox = event.currentTarget.closest('.upload-box');
   const fileInput = uploadBox.querySelector('#fileInput');
+  const icono = uploadBox.querySelector('.icono');
+  const previewImg = uploadBox.querySelector('#preview');
   const fileNameSpan = uploadBox.querySelector('#fileName');
+  const removeBtn = uploadBox.querySelector('#removeBtn');
 
-  fileInput.value = "";
-  fileNameSpan.textContent = "";
-  fileNameSpan.style.display = "none";
-}
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) {
+      volverEstadoInicial();
+      return;
+    }
+
+  
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        previewImg.src = ev.target.result;
+        previewImg.style.display = 'block';
+        fileNameSpan.style.display = 'none';
+        icono.style.display = 'none';
+        removeBtn.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      
+      previewImg.src = '';
+      previewImg.style.display = 'none';
+      fileNameSpan.textContent = file.name;
+      fileNameSpan.style.display = 'block';
+      icono.style.display = 'none';
+      removeBtn.style.display = 'block';
+    }
+  });
+
+  
+  window.eliminarArchivo = function (event) {
+    event.stopPropagation();
+    volverEstadoInicial();
+  };
+
+  
+  window.abrirInputArchivo = function (event) {
+    
+    if (event.target && event.target.id === 'removeBtn') {
+      return;
+    }
+    event.stopPropagation();
+    
+    fileInput.click();
+  };
+
+  
+  function volverEstadoInicial() {
+    fileInput.value = '';
+    previewImg.src = '';
+    previewImg.style.display = 'none';
+    fileNameSpan.textContent = '';
+    fileNameSpan.style.display = 'none';
+    icono.style.display = 'block';
+    removeBtn.style.display = 'none';
+  }
+
+  volverEstadoInicial();
+});
+
 
