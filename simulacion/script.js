@@ -234,8 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const fileName = document.getElementById("file-name");
       const fileSize = document.getElementById("file-size");
       
-      fileName.textContent = `📄 ${file.name}`;
-      fileSize.textContent = `📊 ${(file.size / 1024).toFixed(1)} KB`;
+      fileName.textContent = ` ${file.name}`;
+      fileSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
       
       fileInfo.style.display = "block";
       document.getElementById("removeBtn").style.display = "block";
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("fileInput").value = "";
     
     // Limpiar resultados
-    document.getElementById("resultado-text").textContent = "(sube un archivo CSV con datos EEG)";
+    document.getElementById("resultado-text").textContent = "(Falta Cargar archivo)";
     document.getElementById("confianza-text").style.display = "none";
   }
 
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
           resultadoText.style.color = '#FF9800';
         }
         
-        console.log("✅ Análisis completado:", data);
+        console.log(" Análisis completado:", data);
       } else {
         resultadoText.textContent = "Error en el análisis";
         resultadoText.style.color = '#f44336';
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
     } catch (error) {
-      console.error("❌ Error:", error);
+      console.error(" Error:", error);
       resultadoText.textContent = "Error de conexión";
       resultadoText.style.color = '#f44336';
       confianzaText.style.display = "none";

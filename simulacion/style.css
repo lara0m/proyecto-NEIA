@@ -211,7 +211,7 @@ input {
   }
 
   .upload-box {
-    width: 1200px;
+    width: 500px;
     height: 220px;
     border: 3px solid #7a4da3;
     background-color: #e1c9f9;
@@ -261,7 +261,7 @@ input {
   #btnHistorial {
     position: absolute; 
     bottom: 190px;      
-    right: 80px;            
+    right: 420px;            
     background: none;
     border: none;
     color: #6A1B9A;
