@@ -1,8 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://snyxnocwfmkeakzjslzd.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNueXhub2N3Zm1rZWFrempzbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NDg2MjcsImV4cCI6MjA3ODQyNDYyN30.GD-9DohC1Sz1yphNd0agnzEWzli14_TlsbuNsJuSrLA';
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Comentamos Supabase por ahora - usaremos PostgreSQL local
+// const { createClient } = require('@supabase/supabase-js');
+// const supabaseUrl = 'https://snyxnocwfmkeakzjslzd.supabase.co';
+// const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNueXhub2N3Zm1rZWFrempzbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NDg2MjcsImV4cCI6MjA3ODQyNDYyN30.GD-9DohC1Sz1yphNd0agnzEWzli14_TlsbuNsJuSrLA';
+// const supabase = createClient(supabaseUrl, supabaseKey);
 
 const express = require('express');
 const { Pool } = require('pg');
