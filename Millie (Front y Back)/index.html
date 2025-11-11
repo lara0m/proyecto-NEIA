@@ -1,110 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="style.css" rel="stylesheet" type="text/css">
-  <script src="script.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="script.js"></script>
+    <title>Document</title>
 </head>
 <body>
-  <header>
-    <img src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\Usuario.png" class="iniciosesion">
+    <header>
+  <img src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\Usuario.png" class="iniciosesion">
 
-    <div class="centro">
-      <h1>NEIA</h1>
-      <img src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\inteligencia-artificial.png" class="logoHeader">
-    </div>
-  </header>
-
-  <div id="modalSesion" class="modal">
-    <div class="modal-contenido">
-      <span class="cerrar">&times;</span>
-
-      <div id="formRegistro" class="formulario activo">
-        <h2>Registrarse</h2>
-        <form>
-          <input type="text" placeholder="Nombre de usuario" required>
-          <input type="email" placeholder="Correo electrónico" required>
-          <input type="password" placeholder="Contraseña" required>
-          <button type="submit" class="btn">Crear cuenta</button>
-        </form>
-        <p class="cambio">¿Ya tienes una cuenta? <span id="mostrarLogin">Iniciar sesión</span></p>
-      </div>
-
-      <div id="formLogin" class="formulario">
-        <h2>Iniciar sesión</h2>
-        <form>
-          <input type="text" placeholder="Nombre de usuario" required>
-          <input type="password" placeholder="Contraseña" required>
-          <button type="submit" class="btn">Entrar</button>
-        </form>
-        <p class="cambio">¿No tienes una cuenta? <span id="mostrarRegistro">Registrarse</span></p>
-      </div>
-    </div>
+  <div class="centro">
+    <h1>NEIA</h1>
+    <img src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\inteligencia-artificial.png" class="logoHeader">
   </div>
+</header>
 
-  
-<div class="upload-box" onclick="abrirInputArchivo(event)">
-  <img class="icono" src="C:\\Users\\49006614\\Documents\\GitHub\\proyecto-NEIA\\Millie (Front y Back)\\cargarimagen.png" alt="Upload">
-  
-  <img id="preview" class="preview" style="display: none;" alt="Preview">
-  
-  <span id="fileName" class="preview-file" style="display: none;"></span>
-  <button id="removeBtn" class="remove-btn" style="display: none;" onclick="eliminarArchivo(event)">×</button>
- <input type="file" id="fileInput" style="display: none;">
-</div>
 
-<!-- MODAL CONFIRMACIÓN -->
-<div id="modalConfirmacion" class="modal-confirmacion">
-  <div class="confirmacion-contenido">
-    <h2>¿Deseas guardar el análisis en tu historial?</h2>
-    <div class="botones-confirmacion">
-      <button id="btnGuardarAnalisis" class="btn violeta">Guardar</button>
-      <button id="btnNoGuardar" class="btn blanco">No guardar</button>
+<div id="modalSesion" class="modal">
+  <div class="modal-contenido">
+    <span class="cerrar">&times;</span>
+
+    
+    <div id="formRegistro" class="formulario activo">
+      <h2>Registrarse</h2>
+      <form>
+        <input type="text" placeholder="Nombre de usuario" required>
+        <input type="email" placeholder="Correo electrónico" required>
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit" class="btn">Crear cuenta</button>
+      </form>
+      <p class="cambio">¿Ya tienes una cuenta? <span id="mostrarLogin">Iniciar sesión</span></p>
+    </div>
+
+    
+    <div id="formLogin" class="formulario">
+      <h2>Iniciar sesión</h2>
+      <form>
+        <input type="text" placeholder="Nombre de usuario" required>
+        <input type="password" placeholder="Contraseña" required>
+        <button type="submit" class="btn">Entrar</button>
+      </form>
+      <p class="cambio">¿No tienes una cuenta? <span id="mostrarRegistro">Registrarse</span></p>
     </div>
   </div>
 </div>
 
-<!-- MODAL FORMULARIO GUARDAR -->
-<div id="modalGuardar" class="modal-guardar">
-  <div class="contenido-guardar">
-    <span class="cerrar-guardar">&times;</span>
-    <h2>Guardar análisis</h2>
-    <div class="archivo-info" id="infoArchivo"></div>
-    <input type="text" id="nombreAnalisis" placeholder="Nombre del análisis">
-    <input type="text" id="descripcionAnalisis" placeholder="Descripción (opcional)">
-    <button class="btn-guardar" id="btnGuardarFinal">Guardar</button>
+
+
+
+  <div class="upload-box" onclick="abrirInput(event)">
+
+    <img class="icono" src="C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (Front y Back)\cargarimagen.png" alt="Upload">
+
+    <div id="file-info" class="file-info" style="display: none;">
+      <p id="file-name"></p>
+      <p id="file-size"></p>
+    </div>
+
+    <button id="removeBtn" class="remove-btn" onclick="eliminarArchivo(event)" style="display: none;">×</button>
   </div>
-</div>
-
-
 
   <button id="btnHistorial" class="btnHistorial" style="display: none;">HISTORIAL</button>
-
-  <div id="modalHistorial" class="modal-historial">
-    <div class="historial-contenido">
-      <span class="cerrar-historial">&times;</span>
-      <h2>Historial de Análisis</h2>
-      <div id="historialLista" class="historial-lista"></div>
+  
+<div id="modalHistorial" class="modal-historial">
+  <div class="historial-contenido">
+    <span class="cerrar-historial">&times;</span>
+    <h2>Historial de Análisis</h2>
+    <div id="historialLista" class="historial-lista">
+      
     </div>
   </div>
+</div>
 
 
+  <input type="file" id="fileInput" accept=".csv,text/csv" style="display: none" onchange="mostrarArchivo(event)">
 
-  <input type="file" id="fileInput" accept="image/*" style="display: none" onchange="mostrarImagen(event)">
+    <div class="boton">
+    <button class="botonIniciar" onclick="analizarEEG()">ANALIZAR</button>
+    </div>
 
-  <div class="boton">
-    <button class="botonIniciar">ANALIZAR</button>
+    <div class="loading" id="loading" style="display: none;">
+        <h2>Analizando señales EEG...</h2>
+        <div class="spinner"></div>
+    </div>
+
+    <div class="persona">
+        <h2>Estado emocional detectado: </h2>
+    </div>
+
+    <div class="resultado">
+        <h2 id="resultado-text">(sube un archivo CSV con datos EEG)</h2>
+        <p id="confianza-text" style="display: none;"></p>
+    </div>
+
+    <!-- Modal Confirmación Guardar -->
+<div id="modalConfirmarGuardar" class="modal">
+  <div class="modal-contenido confirmar-guardar">
+    <h2>¿Deseas guardar este análisis en el historial?</h2>
+    <div class="botones-confirmacion">
+      <button id="btnGuardar" class="btn">Guardar</button>
+      <button id="btnNoGuardar" class="btn btn-cancelar">No guardar</button>
+    </div>
   </div>
+</div>
 
-  <div class="persona">
-    <h2>La persona quiere decir: </h2>
-  </div>
+<!-- Modal Formulario Guardar -->
+<div id="modalFormularioGuardar" class="modal">
+  <div class="modal-contenido formulario-guardar">
+    <span id="cerrarFormularioGuardar" class="cerrar">&times;</span>
+    <h2>Guardar análisis</h2>
+    <form id="formGuardarAnalisis">
+      <label>Archivo:</label>
+      <p id="archivoAdjunto"></p>
 
-  <div class="resultado">
-    <h2>(resultado)</h2>
+      <label>Resultado:</label>
+      <p id="resultadoActual"></p>
+
+      <label for="nombreAnalisis">Nombre del análisis (obligatorio):</label>
+      <input type="text" id="nombreAnalisis" placeholder="Ej: Análisis de EEG 1" required>
+
+      <label for="descripcionAnalisis">Descripción (opcional):</label>
+      <textarea id="descripcionAnalisis" rows="3" placeholder="Agrega una breve descripción (opcional)"></textarea>
+
+      <button type="submit" class="btn">Guardar</button>
+    </form>
   </div>
+</div>
+
+
 </body>
 </html>

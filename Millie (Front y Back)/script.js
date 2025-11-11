@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formLogin.classList.remove('activo');
   });
 
+  
   cerrar.addEventListener('click', () => modal.style.display = 'none');
   window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
@@ -58,12 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
     avatarContainer.appendChild(avatar);
     avatarContainer.appendChild(logoutMenu);
 
+    
     avatar.addEventListener('click', (e) => {
       e.stopPropagation();
       logoutMenu.style.display =
         logoutMenu.style.display === 'block' ? 'none' : 'block';
     });
 
+    
     document.addEventListener('click', () => {
       logoutMenu.style.display = 'none';
     });
@@ -76,17 +79,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnHistorial = document.getElementById('btnHistorial');
     const modalHistorial = document.getElementById('modalHistorial');
     const cerrarHistorial = document.querySelector('.cerrar-historial');
-
+  
     btnHistorial.style.display = 'block';
-
-    btnHistorial.addEventListener('click', () => {
+  
+    btnHistorial.addEventListener('click', async () => {
       modalHistorial.style.display = 'flex';
+      await cargarHistorial();
     });
-
+  
     cerrarHistorial.addEventListener('click', () => {
       modalHistorial.style.display = 'none';
     });
-
+  
     window.addEventListener('click', (e) => {
       if (e.target === modalHistorial) {
         modalHistorial.style.display = 'none';
@@ -94,7 +98,59 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Función para cargar el historial desde el servidor
+  async function cargarHistorial() {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario || !usuario.id) return;
+
+    try {
+      const response = await fetch(`/api/historial/${usuario.id}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        mostrarHistorialEnModal(data.historial);
+      } else {
+        console.error("Error cargando historial:", data.error);
+      }
+    } catch (error) {
+      console.error("Error de conexión al cargar historial:", error);
+    }
+  }
+
+  // Función para mostrar el historial en el modal
+  function mostrarHistorialEnModal(historial) {
+    const historialLista = document.getElementById('historialLista');
+    
+    if (historial.length === 0) {
+      historialLista.innerHTML = '<p>No hay análisis previos</p>';
+      return;
+    }
+    
+    historialLista.innerHTML = historial.map(item => {
+      const fecha = new Date(item.fecha_analisis).toLocaleString();
+      const confianza = (item.confianza * 100).toFixed(1);
+      
+      let colorClass = '';
+      if (item.sentimiento.toLowerCase().includes('positivo')) {
+        colorClass = 'resultado-positivo';
+      } else if (item.sentimiento.toLowerCase().includes('negativo')) {
+        colorClass = 'resultado-negativo';
+      } else {
+        colorClass = 'resultado-neutro';
+      }
+      
+      return `
+        <div class="historial-item">
+          <div class="historial-archivo">📄 ${item.archivo_nombre}</div>
+          <div class="historial-resultado ${colorClass}">${item.sentimiento}</div>
+          <div class="historial-confianza">${confianza}%</div>
+          <div class="historial-fecha">${fecha}</div>
+        </div>
+      `;
+    }).join('');
+  }
   
+
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formRegistroForm.querySelector('input[type="text"]').value;
@@ -122,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  
+ 
   formLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formLoginForm.querySelector('input[type="text"]').value;
@@ -156,9 +212,133 @@ document.addEventListener('DOMContentLoaded', () => {
     crearAvatar(usuario.nombre);
     mostrarHistorial();
   }
+
+  
+  window.abrirInput = function (e) {
+    if (e.target.id !== "removeBtn") {
+      document.getElementById("fileInput").click();
+    }
+  }
+
+  window.mostrarArchivo = function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      // Verificar que es un archivo CSV
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        alert('Por favor selecciona un archivo CSV válido');
+        return;
+      }
+      
+      document.querySelector(".icono").style.display = "none";
+      const fileInfo = document.getElementById("file-info");
+      const fileName = document.getElementById("file-name");
+      const fileSize = document.getElementById("file-size");
+      
+      fileName.textContent = ` ${file.name}`;
+      fileSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+      
+      fileInfo.style.display = "block";
+      document.getElementById("removeBtn").style.display = "block";
+    }
+  }
+
+    // === NUEVA FUNCIÓN ELIMINAR ARCHIVO CON MODAL ===
+    window.eliminarArchivo = function (e) {
+      e.stopPropagation();
+      const usuario = localStorage.getItem('usuario');
+      const modalConfirmarGuardar = document.getElementById('modalConfirmarGuardar');
+  
+      // Si no hay usuario, borrar directamente
+      if (!usuario) {
+        limpiarUploadBox();
+        return;
+      }
+  
+      // Mostrar modal de confirmación
+      modalConfirmarGuardar.style.display = 'flex';
+    };
+  
+    // Limpia la caja de carga (upload box)
+    function limpiarUploadBox() {
+      document.getElementById("file-info").style.display = "none";
+      document.querySelector(".icono").style.display = "block";
+      document.getElementById("removeBtn").style.display = "none";
+      document.getElementById("fileInput").value = "";
+      document.getElementById("resultado-text").textContent = "(sube un archivo CSV con datos EEG)";
+      document.getElementById("confianza-text").style.display = "none";
+    }
+  
+  // Función para analizar EEG
+  window.analizarEEG = async function() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+    
+    if (!file) {
+      alert("Por favor selecciona un archivo CSV con datos EEG");
+      return;
+    }
+    
+    const loading = document.getElementById("loading");
+    const resultadoText = document.getElementById("resultado-text");
+    const confianzaText = document.getElementById("confianza-text");
+    
+    // Mostrar loading
+    loading.style.display = "block";
+    resultadoText.textContent = "Procesando...";
+    confianzaText.style.display = "none";
+    
+    try {
+      const formData = new FormData();
+      formData.append('eegFile', file);
+      
+      // Agregar información del usuario si está logueado
+      const usuario = localStorage.getItem('usuario');
+      if (usuario) {
+        formData.append('usuario', usuario);
+      }
+      
+      const response = await fetch('/api/analizar-eeg', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        resultadoText.textContent = data.resultado;
+        confianzaText.textContent = `Confianza: ${(data.confianza * 100).toFixed(1)}%`;
+        confianzaText.style.display = "block";
+        
+        // Cambiar color según el resultado
+        if (data.resultado.toLowerCase().includes('positivo')) {
+          resultadoText.style.color = '#4CAF50';
+        } else if (data.resultado.toLowerCase().includes('negativo')) {
+          resultadoText.style.color = '#f44336';
+        } else {
+          resultadoText.style.color = '#FF9800';
+        }
+        
+        console.log(" Análisis completado:", data);
+      } else {
+        resultadoText.textContent = "Error en el análisis";
+        resultadoText.style.color = '#f44336';
+        confianzaText.style.display = "none";
+        alert(data.error || "Error procesando el archivo");
+      }
+      
+    } catch (error) {
+      console.error(" Error:", error);
+      resultadoText.textContent = "Error de conexión";
+      resultadoText.style.color = '#f44336';
+      confianzaText.style.display = "none";
+      alert("Error de conexión con el servidor");
+    } finally {
+      loading.style.display = "none";
+    }
+  }
 });
 
-
+// ===== MODAL HISTORIAL =====
 const modalHistorial = document.getElementById("modalHistorial");
 const cerrarHistorial = document.querySelector(".cerrar-historial");
 const btnHistorial = document.getElementById("btnHistorial");
@@ -175,155 +355,77 @@ window.addEventListener("click", (e) => {
   if (e.target === modalHistorial) {
     modalHistorial.style.display = "none";
   }
-});
 
-document.addEventListener('DOMContentLoaded', () => {
-  
-  const uploadBox = document.querySelector('.upload-box');
-  if (!uploadBox) return;
+    // === MODAL GUARDAR EN HISTORIAL ===
 
-  const fileInput = uploadBox.querySelector('#fileInput');
-  const icono = uploadBox.querySelector('.icono');
-  const previewImg = uploadBox.querySelector('#preview');
-  const fileNameSpan = uploadBox.querySelector('#fileName');
-  const removeBtn = uploadBox.querySelector('#removeBtn');
-
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) {
-      volverEstadoInicial();
-      return;
-    }
-
-  
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        previewImg.src = ev.target.result;
-        previewImg.style.display = 'block';
-        fileNameSpan.style.display = 'none';
-        icono.style.display = 'none';
-        removeBtn.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    } else {
-      
-      previewImg.src = '';
-      previewImg.style.display = 'none';
-      fileNameSpan.textContent = file.name;
-      fileNameSpan.style.display = 'block';
-      icono.style.display = 'none';
-      removeBtn.style.display = 'block';
-    }
-  });
-
-  
-  window.eliminarArchivo = function (event) {
-    event.stopPropagation();
-    volverEstadoInicial();
-  };
-
-  
-  window.abrirInputArchivo = function (event) {
-    
-    if (event.target && event.target.id === 'removeBtn') {
-      return;
-    }
-    event.stopPropagation();
-    
-    fileInput.click();
-  };
-
-  
-  function volverEstadoInicial() {
-    fileInput.value = '';
-    previewImg.src = '';
-    previewImg.style.display = 'none';
-    fileNameSpan.textContent = '';
-    fileNameSpan.style.display = 'none';
-    icono.style.display = 'block';
-    removeBtn.style.display = 'none';
-  }
-
-  volverEstadoInicial();
-});
-
-
-// === MODALES DE GUARDADO ===
-document.addEventListener('DOMContentLoaded', () => {
-  const modalConfirmacion = document.getElementById('modalConfirmacion');
-  const btnGuardarAnalisis = document.getElementById('btnGuardarAnalisis');
+  // Obtenemos los elementos SOLO cuando el DOM ya está cargado
+  const modalConfirmarGuardar = document.getElementById('modalConfirmarGuardar');
+  const modalFormularioGuardar = document.getElementById('modalFormularioGuardar');
+  const btnGuardar = document.getElementById('btnGuardar');
   const btnNoGuardar = document.getElementById('btnNoGuardar');
+  const cerrarFormularioGuardar = document.getElementById('cerrarFormularioGuardar');
+  const formGuardarAnalisis = document.getElementById('formGuardarAnalisis');
 
-  const modalGuardar = document.getElementById('modalGuardar');
-  const cerrarGuardar = document.querySelector('.cerrar-guardar');
-  const infoArchivo = document.getElementById('infoArchivo');
-  const resultadoTexto = document.querySelector('.resultado h2');
-  const btnGuardarFinal = document.getElementById('btnGuardarFinal');
+  // Función auxiliar para limpiar el upload box
+  function limpiarUploadBox() {
+    document.getElementById("file-info").style.display = "none";
+    document.querySelector(".icono").style.display = "block";
+    document.getElementById("removeBtn").style.display = "none";
+    document.getElementById("fileInput").value = "";
+    document.getElementById("resultado-text").textContent = "(sube un archivo CSV con datos EEG)";
+    document.getElementById("confianza-text").style.display = "none";
+  }
 
-  const fileInput = document.getElementById('fileInput');
-  const preview = document.getElementById('preview');
-  const fileNameSpan = document.getElementById('fileName');
-  const icono = document.querySelector('.icono');
-  const removeBtn = document.getElementById('removeBtn');
-
-  // Interceptar la función eliminarArchivo
-  window.eliminarArchivo = function (event) {
-    event.stopPropagation();
-
+  // Sobrescribimos eliminarArchivo
+  window.eliminarArchivo = function (e) {
+    e.stopPropagation();
     const usuario = localStorage.getItem('usuario');
-    if (usuario) {
-      modalConfirmacion.style.display = 'flex';
-    } else {
-      volverEstadoInicial();
+
+    if (!usuario) {
+      limpiarUploadBox();
+      return;
     }
+
+    modalConfirmarGuardar.style.display = 'flex';
   };
 
-  // Botón "No guardar"
+  // Si elige "No guardar"
   btnNoGuardar.addEventListener('click', () => {
-    modalConfirmacion.style.display = 'none';
-    volverEstadoInicial();
+    modalConfirmarGuardar.style.display = 'none';
+    limpiarUploadBox();
   });
 
-  // Botón "Guardar"
-  btnGuardarAnalisis.addEventListener('click', () => {
-    modalConfirmacion.style.display = 'none';
+  // Si elige "Guardar"
+  btnGuardar.addEventListener('click', () => {
+    modalConfirmarGuardar.style.display = 'none';
 
-    const nombreArchivo = fileInput.files[0]?.name || 'Sin archivo';
-    const resultado = resultadoTexto ? resultadoTexto.textContent : '(resultado)';
-    infoArchivo.innerHTML = `
-      <p><strong>Archivo:</strong> ${nombreArchivo}</p>
-      <p><strong>Resultado:</strong> ${resultado}</p>
-    `;
-    modalGuardar.style.display = 'flex';
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+    const resultadoText = document.getElementById("resultado-text").textContent;
+
+    document.getElementById("archivoAdjunto").textContent = file ? file.name : "(sin archivo)";
+    document.getElementById("resultadoActual").textContent = resultadoText;
+
+    modalFormularioGuardar.style.display = 'flex';
   });
 
-  // Cerrar modal guardar con la X
-  cerrarGuardar.addEventListener('click', () => {
-    modalGuardar.style.display = 'none';
-    volverEstadoInicial();
+  // Cierra el modal del formulario
+  cerrarFormularioGuardar.addEventListener('click', () => {
+    modalFormularioGuardar.style.display = 'none';
   });
 
-  // Botón final "Guardar" (por ahora no hace nada)
-  btnGuardarFinal.addEventListener('click', () => {
-    modalGuardar.style.display = 'none';
-    volverEstadoInicial();
+  // Envío del formulario (por ahora solo simula)
+  formGuardarAnalisis.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('✅ El análisis se guardaría aquí (simulado)');
+    modalFormularioGuardar.style.display = 'none';
+    limpiarUploadBox();
   });
 
-  // Si se hace click afuera, cerrar modales
+  // Cierra los modales si se hace clic fuera
   window.addEventListener('click', (e) => {
-    if (e.target === modalConfirmacion) modalConfirmacion.style.display = 'none';
-    if (e.target === modalGuardar) modalGuardar.style.display = 'none';
+    if (e.target === modalConfirmarGuardar) modalConfirmarGuardar.style.display = 'none';
+    if (e.target === modalFormularioGuardar) modalFormularioGuardar.style.display = 'none';
   });
 
-  // Función de reset (reutiliza tu lógica)
-  function volverEstadoInicial() {
-    fileInput.value = '';
-    preview.src = '';
-    preview.style.display = 'none';
-    fileNameSpan.textContent = '';
-    fileNameSpan.style.display = 'none';
-    icono.style.display = 'block';
-    removeBtn.style.display = 'none';
-  }
 });
