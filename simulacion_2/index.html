@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NEIA - Análisis de señales EEG para detección de emociones">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="script.js"></script>
+    <title>NEIA - Análisis de Emociones EEG</title>
+</head>
+<body>
+    <!-- Header fijo -->
+    <header class="header-fixed">
+        <nav class="navbar">
+            <div class="nav-logo">
+                <img src="inteligencia-artificial.png" class="logoHeader" alt="Logo NEIA">
+                <span class="logo-text">NEIA</span>
+            </div>
+            <div class="nav-links">
+                <a href="#inicio" class="nav-link">Inicio</a>
+                <a href="#caracteristicas" class="nav-link">Características</a>
+                <a href="#analizar" class="nav-link">Analizar</a>
+                <a href="#sobre" class="nav-link">Sobre</a>
+                <a href="#presentacion" class="nav-link">Presentación</a>
+                <a href="#contacto" class="nav-link">Contacto</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+                    <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <div class="user-icon-container" id="userIconContainer">
+                    <svg class="user-icon" id="userIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="button" tabindex="0" aria-label="Abrir menú de sesión">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Modal de Sesión -->
+    <div id="modalSesion" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar">&times;</span>
+            
+            <div id="formRegistro" class="formulario activo">
+                <h2>Registrarse</h2>
+                <form>
+                    <input type="text" placeholder="Nombre de usuario" required>
+                    <input type="email" placeholder="Correo electrónico" required>
+                    <input type="password" placeholder="Contraseña" required>
+                    <button type="submit" class="btn">Crear cuenta</button>
+                </form>
+                <p class="cambio">¿Ya tienes una cuenta? <span id="mostrarLogin">Iniciar sesión</span></p>
+            </div>
+            
+            <div id="formLogin" class="formulario">
+                <h2>Iniciar sesión</h2>
+                <form>
+                    <input type="text" placeholder="Nombre de usuario" required>
+                    <input type="password" placeholder="Contraseña" required>
+                    <button type="submit" class="btn">Entrar</button>
+                </form>
+                <p class="cambio">¿No tienes una cuenta? <span id="mostrarRegistro">Registrarse</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">Análisis Inteligente de Emociones con EEG</span>
+            </h1>
+            <p class="hero-subtitle">Descubre el estado emocional a través de señales cerebrales usando inteligencia artificial avanzada</p>
+            <div class="hero-buttons">
+                <a href="#analizar" class="btn-primary">Comenzar Análisis</a>
+                <a href="#caracteristicas" class="btn-secondary">Saber Más</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-gradient"></div>
+        </div>
+    </section>
+
+    <!-- Slider de Estadísticas -->
+    <section class="stats-section">
+        <div class="stats-slider">
+            <div class="stat-item">
+                <div class="stat-number" data-target="95">0</div>
+                <div class="stat-label">Precisión</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="1000">0</div>
+                <div class="stat-label">Análisis Realizados</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="3">0</div>
+                <div class="stat-label">Estados Emocionales</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="24">0</div>
+                <div class="stat-label">Horas de Procesamiento</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Características con Acordeones -->
+    <section id="caracteristicas" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Características Principales</h2>
+            <p class="section-subtitle">Explora las capacidades de NEIA</p>
+            
+            <div class="accordion-container">
+                <!-- Característica 1 - Editable -->
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="accordion-icon">🧠</span>
+                        <span class="accordion-title">Análisis en Tiempo Real</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Procesa señales EEG de forma instantánea utilizando modelos de deep learning entrenados con miles de muestras. Obtén resultados precisos en segundos.</p>
+                        <ul>
+                            <li>Procesamiento rápido y eficiente</li>
+                            <li>Alta precisión en la detección</li>
+                            <li>Análisis de múltiples canales simultáneos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Característica 2 - Editable -->
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="accordion-icon">📊</span>
+                        <span class="accordion-title">Detección de Estados Emocionales</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Identifica tres estados emocionales principales: positivo, negativo y neutro, con un nivel de confianza detallado para cada análisis.</p>
+                        <ul>
+                            <li>Clasificación emocional precisa</li>
+                            <li>Métricas de confianza transparentes</li>
+                            <li>Visualización clara de resultados</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Característica 3 - Editable -->
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="accordion-icon">💾</span>
+                        <span class="accordion-title">Historial de Análisis</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Guarda y revisa todos tus análisis previos. Accede a tu historial completo con fechas, resultados y niveles de confianza.</p>
+                        <ul>
+                            <li>Almacenamiento seguro de datos</li>
+                            <li>Búsqueda y filtrado de análisis</li>
+                            <li>Exportación de resultados</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Característica 4 - Editable -->
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="accordion-icon">🔒</span>
+                        <span class="accordion-title">Seguridad y Privacidad</span>
+                        <span class="accordion-arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Tus datos están protegidos con los más altos estándares de seguridad. Sistema de autenticación robusto y encriptación de información sensible.</p>
+                        <ul>
+                            <li>Autenticación segura</li>
+                            <li>Encriptación de datos</li>
+                            <li>Cumplimiento de privacidad</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Análisis -->
+    <section id="analizar" class="analyze-section">
+        <div class="container">
+            <h2 class="section-title">Analiza tus Señales EEG</h2>
+            <p class="section-subtitle">Sube un archivo CSV con datos EEG y obtén resultados instantáneos</p>
+            
+            <div class="analyze-container">
+                <div class="upload-box" onclick="abrirInput(event)" role="button" tabindex="0" aria-label="Área de carga de archivo CSV">
+                    <img class="icono" src="cargarimagen.png" alt="Cargar archivo CSV">
+                    <div id="file-info" class="file-info" style="display: none;">
+                        <p id="file-name"></p>
+                        <p id="file-size"></p>
+                    </div>
+                    <button id="removeBtn" class="remove-btn" onclick="eliminarArchivo(event)" style="display: none;">×</button>
+                </div>
+
+                <input type="file" id="fileInput" accept=".csv,text/csv" style="display: none" onchange="mostrarArchivo(event)">
+
+                <div class="boton">
+                    <button class="botonIniciar" onclick="analizarEEG()">ANALIZAR</button>
+                </div>
+
+                <div class="loading" id="loading" style="display: none;" role="status" aria-live="polite">
+                    <h2>Analizando señales EEG...</h2>
+                    <div class="spinner" aria-hidden="true"></div>
+                </div>
+
+                <div class="resultado-container">
+                    <div class="persona">
+                        <h2>Estado emocional detectado: </h2>
+                    </div>
+                    <div class="resultado">
+                        <h2 id="resultado-text">(sube un archivo CSV con datos EEG)</h2>
+                        <p id="confianza-text" style="display: none;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Sobre -->
+    <section id="sobre" class="about-section">
+        <div class="container">
+            <h2 class="section-title">Sobre NEIA</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>NEIA es una plataforma avanzada de análisis de emociones basada en señales electroencefalográficas (EEG). Utilizamos inteligencia artificial y machine learning para proporcionar análisis precisos y confiables del estado emocional.</p>
+                    <p>Nuestra tecnología combina procesamiento de señales avanzado con modelos de deep learning entrenados en extensas bases de datos, garantizando resultados de alta calidad para investigadores, profesionales de la salud y desarrolladores.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Presentación -->
+    <section id="presentacion" class="presentation-section">
+        <div class="container">
+            <h2 class="section-title">Presentación del Proyecto</h2>
+            <p class="section-subtitle">Conoce los roles y el proceso de análisis</p>
+            
+            <div class="presentation-cards">
+                <div class="presentation-card" onclick="abrirPresentacion('fullstack')">
+                    <div class="card-icon">💻</div>
+                    <h3>Full Stack Developer</h3>
+                    <p>Desarrollo de la interfaz web y backend</p>
+                    <div class="card-arrow">→</div>
+                </div>
+                
+                <div class="presentation-card" onclick="abrirPresentacion('ia')">
+                    <div class="card-icon">🤖</div>
+                    <h3>Inteligencia Artificial</h3>
+                    <p>Modelo de análisis de emociones con EEG</p>
+                    <div class="card-arrow">→</div>
+                </div>
+                
+                <div class="presentation-card" onclick="abrirPresentacion('proceso')">
+                    <div class="card-icon">⚙️</div>
+                    <h3>Proceso de Análisis</h3>
+                    <p>Visualización del flujo de trabajo</p>
+                    <div class="card-arrow">→</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Presentación -->
+    <div id="modalPresentacion" class="modal-presentacion">
+        <div class="presentacion-contenido">
+            <span class="cerrar-presentacion">&times;</span>
+            <div id="presentacionContenido" class="presentacion-body">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Visualización del Proceso de Análisis -->
+    <div id="procesoAnalisis" class="proceso-analisis" style="display: none;">
+        <div class="proceso-container">
+            <h3>Procesando Análisis EEG</h3>
+            <div class="proceso-steps">
+                <div class="proceso-step" id="step1">
+                    <div class="step-icon">📁</div>
+                    <div class="step-text">Cargando archivo CSV</div>
+                    <div class="step-status"></div>
+                </div>
+                <div class="proceso-step" id="step2">
+                    <div class="step-icon">📊</div>
+                    <div class="step-text">Procesando datos EEG</div>
+                    <div class="step-status"></div>
+                </div>
+                <div class="proceso-step" id="step3">
+                    <div class="step-icon">🧠</div>
+                    <div class="step-text">Aplicando modelo de IA</div>
+                    <div class="step-status"></div>
+                </div>
+                <div class="proceso-step" id="step4">
+                    <div class="step-icon">📈</div>
+                    <div class="step-text">Extrayendo características</div>
+                    <div class="step-status"></div>
+                </div>
+                <div class="proceso-step" id="step5">
+                    <div class="step-icon">🎯</div>
+                    <div class="step-text">Clasificando emoción</div>
+                    <div class="step-status"></div>
+                </div>
+                <div class="proceso-step" id="step6">
+                    <div class="step-icon">✅</div>
+                    <div class="step-text">Resultado final</div>
+                    <div class="step-status"></div>
+                </div>
+            </div>
+            <div class="proceso-details" id="procesoDetails">
+                <p>Iniciando análisis...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Contacto -->
+    <section id="contacto" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Contacto</h2>
+            <p class="section-subtitle">Estamos aquí para ayudarte. Ponte en contacto con nosotros</p>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Email</h3>
+                            <a href="mailto:contacto@neia.com">contacto@neia.com</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Teléfono</h3>
+                            <a href="tel:+1234567890">+1 (234) 567-890</a>
+                            <a href="tel:+1987654321">+1 (987) 654-321</a>
+                            <a href="tel:+1555123456">+1 (555) 123-456</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>NEIA</h3>
+                    <p>Análisis inteligente de emociones</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces</h4>
+                    <a href="#inicio">Inicio</a>
+                    <a href="#caracteristicas">Características</a>
+                    <a href="#analizar">Analizar</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p>info@neia.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 NEIA. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botón Historial Flotante -->
+    <button id="btnHistorial" class="btnHistorial" style="display: none;" aria-label="Ver historial de análisis">HISTORIAL</button>
+    
+    <!-- Modal Historial -->
+    <div id="modalHistorial" class="modal-historial">
+        <div class="historial-contenido">
+            <span class="cerrar-historial">&times;</span>
+            <h2>Historial de Análisis</h2>
+            <div id="historialLista" class="historial-lista">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para acordeones
+        function toggleAccordion(button) {
+            const item = button.parentElement;
+            const content = item.querySelector('.accordion-content');
+            const arrow = button.querySelector('.accordion-arrow');
+            const isActive = item.classList.contains('active');
+            
+            // Cerrar todos los demás
+            document.querySelectorAll('.accordion-item').forEach(acc => {
+                if (acc !== item) {
+                    acc.classList.remove('active');
+                    acc.querySelector('.accordion-content').style.maxHeight = null;
+                    acc.querySelector('.accordion-arrow').style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            // Toggle del actual
+            if (isActive) {
+                item.classList.remove('active');
+                content.style.maxHeight = null;
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                item.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + "px";
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Animación de números en el slider
+        function animateNumbers() {
+            const stats = document.querySelectorAll('.stat-number');
+            stats.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-target'));
+                const duration = 2000;
+                const increment = target / (duration / 16);
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target + (target >= 1000 ? '+' : '');
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(current) + (target >= 1000 ? '+' : '');
+                    }
+                }, 16);
+            });
+        }
+
+        // Intersection Observer para animar números cuando se vea la sección
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    animateNumbers();
+                }
+            });
+        }, observerOptions);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const statsSection = document.querySelector('.stats-section');
+            if (statsSection) {
+                observer.observe(statsSection);
+            }
+        });
+
+        // Smooth scroll para navegación
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // Funciones para presentaciones
+        function abrirPresentacion(tipo) {
+            const modal = document.getElementById('modalPresentacion');
+            const contenido = document.getElementById('presentacionContenido');
+            
+            let html = '';
+            
+            if (tipo === 'fullstack') {
+                html = `
+                    <h2>💻 Full Stack Developer</h2>
+                    <div class="presentacion-slide">
+                        <h3>Frontend</h3>
+                        <ul>
+                            <li>HTML5, CSS3 con diseño responsive</li>
+                            <li>JavaScript vanilla para interactividad</li>
+                            <li>Diseño minimalista tipo GitHub/OpenAI</li>
+                            <li>Modo oscuro/claro con persistencia</li>
+                            <li>Animaciones y transiciones suaves</li>
+                        </ul>
+                    </div>
+                    <div class="presentacion-slide">
+                        <h3>Backend</h3>
+                        <ul>
+                            <li>Node.js con Express</li>
+                            <li>PostgreSQL para almacenamiento</li>
+                            <li>API RESTful para comunicación</li>
+                            <li>Manejo de archivos CSV con multer</li>
+                            <li>Integración con servidor Python/IA</li>
+                        </ul>
+                    </div>
+                    <div class="presentacion-slide">
+                        <h3>Características Técnicas</h3>
+                        <ul>
+                            <li>Sistema de autenticación de usuarios</li>
+                            <li>Historial de análisis persistente</li>
+                            <li>Procesamiento asíncrono de archivos</li>
+                            <li>Manejo de errores robusto</li>
+                            <li>Arquitectura escalable</li>
+                        </ul>
+                    </div>
+                `;
+            } else if (tipo === 'ia') {
+                html = `
+                    <h2>🤖 Inteligencia Artificial</h2>
+                    <div class="presentacion-slide">
+                        <h3>Modelo de Deep Learning</h3>
+                        <ul>
+                            <li>Red neuronal entrenada con datos EEG</li>
+                            <li>Clasificación de emociones: Positivo, Negativo, Neutro</li>
+                            <li>Preprocesamiento de señales EEG</li>
+                            <li>Extracción de características espectrales</li>
+                            <li>Normalización de datos con Scaler</li>
+                        </ul>
+                    </div>
+                    <div class="presentacion-slide">
+                        <h3>Tecnologías IA</h3>
+                        <ul>
+                            <li>TensorFlow/Keras para el modelo</li>
+                            <li>Python para procesamiento</li>
+                            <li>Scikit-learn para preprocesamiento</li>
+                            <li>Pandas para manejo de datos</li>
+                            <li>Numpy para operaciones matemáticas</li>
+                        </ul>
+                    </div>
+                    <div class="presentacion-slide">
+                        <h3>Proceso de Análisis</h3>
+                        <ul>
+                            <li>Carga y validación de archivos CSV</li>
+                            <li>Preprocesamiento de señales EEG</li>
+                            <li>Aplicación del modelo entrenado</li>
+                            <li>Cálculo de confianza de predicción</li>
+                            <li>Retorno de resultados estructurados</li>
+                        </ul>
+                    </div>
+                `;
+            } else if (tipo === 'proceso') {
+                html = `
+                    <h2>⚙️ Proceso de Análisis</h2>
+                    <div class="presentacion-slide">
+                        <h3>Flujo Completo</h3>
+                        <div class="proceso-diagrama">
+                            <div class="diagrama-step">
+                                <span class="diagrama-num">1</span>
+                                <span class="diagrama-text">Usuario sube archivo CSV</span>
+                            </div>
+                            <div class="diagrama-arrow">↓</div>
+                            <div class="diagrama-step">
+                                <span class="diagrama-num">2</span>
+                                <span class="diagrama-text">Backend recibe y valida archivo</span>
+                            </div>
+                            <div class="diagrama-arrow">↓</div>
+                            <div class="diagrama-step">
+                                <span class="diagrama-num">3</span>
+                                <span class="diagrama-text">Envío a servidor Python/IA</span>
+                            </div>
+                            <div class="diagrama-arrow">↓</div>
+                            <div class="diagrama-step">
+                                <span class="diagrama-num">4</span>
+                                <span class="diagrama-text">Procesamiento con modelo</span>
+                            </div>
+                            <div class="diagrama-arrow">↓</div>
+                            <div class="diagrama-step">
+                                <span class="diagrama-num">5</span>
+                                <span class="diagrama-text">Retorno de resultado</span>
+                            </div>
+                            <div class="diagrama-arrow">↓</div>
+                            <div class="diagrama-step">
+                                <span class="diagrama-num">6</span>
+                                <span class="diagrama-text">Visualización en interfaz</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="presentacion-slide">
+                        <h3>Arquitectura del Sistema</h3>
+                        <ul>
+                            <li><strong>Frontend:</strong> Interfaz web interactiva</li>
+                            <li><strong>Backend Node.js:</strong> API REST, manejo de archivos</li>
+                            <li><strong>Servidor Python:</strong> Procesamiento IA</li>
+                            <li><strong>Base de Datos:</strong> Almacenamiento de historial</li>
+                            <li><strong>Comunicación:</strong> HTTP/JSON entre componentes</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            contenido.innerHTML = html;
+            modal.style.display = 'flex';
+        }
+
+        // Cerrar modal de presentación
+        document.addEventListener('DOMContentLoaded', () => {
+            const cerrarPresentacion = document.querySelector('.cerrar-presentacion');
+            const modalPresentacion = document.getElementById('modalPresentacion');
+            
+            if (cerrarPresentacion) {
+                cerrarPresentacion.addEventListener('click', () => {
+                    modalPresentacion.style.display = 'none';
+                });
+            }
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === modalPresentacion) {
+                    modalPresentacion.style.display = 'none';
+                }
+            });
+        });
+
+        // Función para mostrar proceso de análisis
+        function mostrarProcesoAnalisis() {
+            const procesoDiv = document.getElementById('procesoAnalisis');
+            procesoDiv.style.display = 'block';
+            
+            // Resetear scroll al inicio
+            setTimeout(() => {
+                procesoDiv.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+            
+            // Resetear todos los pasos
+            for (let i = 1; i <= 6; i++) {
+                const step = document.getElementById(`step${i}`);
+                const status = step.querySelector('.step-status');
+                step.classList.remove('active', 'completed');
+                status.textContent = '';
+            }
+            
+            // Simular proceso paso a paso
+            const steps = [
+                { id: 1, text: 'Archivo CSV cargado correctamente', delay: 500 },
+                { id: 2, text: 'Procesando datos EEG...', delay: 1500 },
+                { id: 3, text: 'Aplicando modelo de deep learning', delay: 2500 },
+                { id: 4, text: 'Extrayendo características espectrales', delay: 3500 },
+                { id: 5, text: 'Clasificando estado emocional...', delay: 4500 },
+                { id: 6, text: 'Análisis completado exitosamente', delay: 5500 }
+            ];
+            
+            steps.forEach((step, index) => {
+                setTimeout(() => {
+                    const stepElement = document.getElementById(`step${step.id}`);
+                    const statusElement = stepElement.querySelector('.step-status');
+                    const detailsElement = document.getElementById('procesoDetails');
+                    const procesoDiv = document.getElementById('procesoAnalisis');
+                    
+                    stepElement.classList.add('active');
+                    statusElement.textContent = '⏳';
+                    
+                    if (detailsElement) {
+                        detailsElement.innerHTML = `<p>${step.text}</p>`;
+                    }
+                    
+                    // Hacer scroll automático al paso activo
+                    if (procesoDiv && stepElement) {
+                        setTimeout(() => {
+                            stepElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center',
+                                inline: 'nearest'
+                            });
+                        }, 100);
+                    }
+                    
+                    // Marcar como completado después de un breve delay
+                    setTimeout(() => {
+                        stepElement.classList.remove('active');
+                        stepElement.classList.add('completed');
+                        statusElement.textContent = '✅';
+                        
+                        // Scroll final al último paso completado
+                        if (procesoDiv && stepElement) {
+                            setTimeout(() => {
+                                stepElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center',
+                                    inline: 'nearest'
+                                });
+                            }, 100);
+                        }
+                    }, 800);
+                }, step.delay);
+            });
+        }
+
+        // Ocultar proceso al finalizar
+        function ocultarProcesoAnalisis() {
+            setTimeout(() => {
+                const procesoDiv = document.getElementById('procesoAnalisis');
+                procesoDiv.style.display = 'none';
+            }, 3000); // Reducido a 4 segundos después de completar
+        }
+    </script>
+</body>
+</html>
