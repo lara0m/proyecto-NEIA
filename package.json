@@ -18,10 +18,11 @@
   },
   "homepage": "https://github.com/lara0m/proyecto-NEIA#readme",
   "dependencies": {
-    "@supabase/supabase-js": "^2.81.0",
+    "@supabase/supabase-js": "^2.81.1",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "multer": "^2.0.2",
     "pg": "^8.16.3"
   }
 }

@@ -421,3 +421,15 @@ input {
   font-weight: bold;
   color: #4A148C;
 }
+
+.archivo-nombre a {
+  color: #4A148C;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.archivo-nombre a:hover {
+  text-decoration: underline;
+  color: #6A1B9A;
+}

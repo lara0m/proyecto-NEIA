@@ -9,20 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistroForm = formRegistro.querySelector('form');
   const formLoginForm = formLogin.querySelector('form');
 
-  
+  // ===== MODAL LOGIN / REGISTRO =====
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
     formLogin.classList.remove('activo');
   });
 
-  
   cerrar.addEventListener('click', () => modal.style.display = 'none');
   window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
   });
 
-  
   mostrarLogin.addEventListener('click', () => {
     formRegistro.classList.remove('activo');
     formLogin.classList.add('activo');
@@ -33,10 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     formRegistro.classList.add('activo');
   });
 
-  
+  // ===== AVATAR DE USUARIO =====
   function crearAvatar(nombreUsuario) {
     const iniciales = nombreUsuario.slice(0, 2).toUpperCase();
-
     const avatarContainer = document.createElement('div');
     avatarContainer.classList.add('avatar-container');
 
@@ -59,14 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
     avatarContainer.appendChild(avatar);
     avatarContainer.appendChild(logoutMenu);
 
-    
     avatar.addEventListener('click', (e) => {
       e.stopPropagation();
       logoutMenu.style.display =
         logoutMenu.style.display === 'block' ? 'none' : 'block';
     });
 
-    
     document.addEventListener('click', () => {
       logoutMenu.style.display = 'none';
     });
@@ -74,23 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
     botonSesion.replaceWith(avatarContainer);
   }
 
-  
+  // ===== HISTORIAL =====
   function mostrarHistorial() {
     const btnHistorial = document.getElementById('btnHistorial');
     const modalHistorial = document.getElementById('modalHistorial');
     const cerrarHistorial = document.querySelector('.cerrar-historial');
-  
+
     btnHistorial.style.display = 'block';
-  
+
     btnHistorial.addEventListener('click', async () => {
       modalHistorial.style.display = 'flex';
       await cargarHistorial();
     });
-  
+
     cerrarHistorial.addEventListener('click', () => {
       modalHistorial.style.display = 'none';
     });
-  
+
     window.addEventListener('click', (e) => {
       if (e.target === modalHistorial) {
         modalHistorial.style.display = 'none';
@@ -98,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Función para cargar el historial desde el servidor
   async function cargarHistorial() {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (!usuario || !usuario.id) return;
@@ -106,49 +100,90 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch(`/api/historial/${usuario.id}`);
       const data = await response.json();
-      
+
       if (data.success) {
         mostrarHistorialEnModal(data.historial);
       } else {
-        console.error("Error cargando historial:", data.error);
+        console.error('Error cargando historial:', data.error);
       }
     } catch (error) {
-      console.error("Error de conexión al cargar historial:", error);
+      console.error('Error de conexión al cargar historial:', error);
     }
   }
 
-  // Función para mostrar el historial en el modal
-  function mostrarHistorialEnModal(historial) {
-    const historialLista = document.getElementById('historialLista');
-    
-    if (historial.length === 0) {
-      historialLista.innerHTML = '<p>No hay análisis previos</p>';
-      return;
+    // ===== HISTORIAL =====
+    function mostrarHistorial() {
+      const btnHistorial = document.getElementById('btnHistorial');
+      const modalHistorial = document.getElementById('modalHistorial');
+      const cerrarHistorial = document.querySelector('.cerrar-historial');
+  
+      btnHistorial.style.display = 'block';
+  
+      btnHistorial.addEventListener('click', async () => {
+        modalHistorial.style.display = 'flex';
+        await cargarHistorial();
+      });
+  
+      cerrarHistorial.addEventListener('click', () => {
+        modalHistorial.style.display = 'none';
+      });
+  
+      window.addEventListener('click', (e) => {
+        if (e.target === modalHistorial) {
+          modalHistorial.style.display = 'none';
+        }
+      });
     }
-    
-    historialLista.innerHTML = historial.map(item => {
-      const fecha = new Date(item.fecha_analisis).toLocaleString();
-      const confianza = (item.confianza * 100).toFixed(1);
-      
-      let colorClass = '';
-      if (item.sentimiento.toLowerCase().includes('positivo')) {
-        colorClass = 'resultado-positivo';
-      } else if (item.sentimiento.toLowerCase().includes('negativo')) {
-        colorClass = 'resultado-negativo';
-      } else {
-        colorClass = 'resultado-neutro';
+  
+    async function cargarHistorial() {
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      if (!usuario || !usuario.id) return;
+  
+      try {
+        const response = await fetch(`/api/historial/${usuario.id}`);
+        const data = await response.json();
+  
+        if (data.success) {
+          mostrarHistorialEnModal(data.historial);
+        } else {
+          console.error('Error cargando historial:', data.error);
+        }
+      } catch (error) {
+        console.error('Error de conexión al cargar historial:', error);
       }
-      
-      return `
-        <div class="historial-item">
-          <div class="historial-archivo">📄 ${item.archivo_nombre}</div>
-          <div class="historial-resultado ${colorClass}">${item.sentimiento}</div>
-          <div class="historial-confianza">${confianza}%</div>
-          <div class="historial-fecha">${fecha}</div>
-        </div>
-      `;
-    }).join('');
-  }
+    }
+  
+    function mostrarHistorialEnModal(historial) {
+      const historialLista = document.getElementById('historialLista');
+      if (historial.length === 0) {
+        historialLista.innerHTML = '<p>No hay análisis previos</p>';
+        return;
+      }
+  
+      historialLista.innerHTML = historial.map(item => {
+        const fecha = new Date(item.fecha).toLocaleString();
+        const confianza = item.confianza ? `${parseFloat(item.confianza).toFixed(1)}%` : '–';
+        const descripcion = item.descripcion ? `<p class="desc">${item.descripcion}</p>` : '';
+        const resultado = item.resultado || 'Sin resultado';
+  
+        return `
+          <div class="historial-item">
+            <div class="archivo-nombre">
+              <a href="${item.archivo_url}" target="_blank" download="${item.archivo_nombre}">
+                📄 ${item.archivo_nombre}
+              </a>
+            </div>
+            <h3>${item.nombre}</h3>
+            ${descripcion}
+            <div class="historial-detalles">
+              <span class="resultado">${resultado}</span>
+              <span class="confianza">${confianza}</span>
+              <span class="fecha">${fecha}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   
 
   formRegistroForm.addEventListener('submit', async (e) => {
@@ -161,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('http://localhost:3000/api/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, email, password })
+        body: JSON.stringify({ nombre, email, password }),
       });
       const data = await res.json();
       if (data.success) {
@@ -169,16 +204,12 @@ document.addEventListener('DOMContentLoaded', () => {
         crearAvatar(data.usuario.nombre);
         mostrarHistorial();
         modal.style.display = 'none';
-      } else {
-        alert(data.error);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error al conectar con el servidor");
+      } else alert(data.error);
+    } catch {
+      alert('Error al conectar con el servidor');
     }
   });
 
- 
   formLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formLoginForm.querySelector('input[type="text"]').value;
@@ -188,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('http://localhost:3000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, password })
+        body: JSON.stringify({ nombre, password }),
       });
       const data = await res.json();
       if (data.success) {
@@ -196,16 +227,12 @@ document.addEventListener('DOMContentLoaded', () => {
         crearAvatar(data.usuario.nombre);
         mostrarHistorial();
         modal.style.display = 'none';
-      } else {
-        alert(data.error);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error al conectar con el servidor");
+      } else alert(data.error);
+    } catch {
+      alert('Error al conectar con el servidor');
     }
   });
 
-  
   const usuarioGuardado = localStorage.getItem('usuario');
   if (usuarioGuardado) {
     const usuario = JSON.parse(usuarioGuardado);
@@ -213,152 +240,37 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarHistorial();
   }
 
-  
+  // ===== UPLOAD BOX =====
   window.abrirInput = function (e) {
-    if (e.target.id !== "removeBtn") {
-      document.getElementById("fileInput").click();
-    }
-  }
+    if (e.target.id !== 'removeBtn') document.getElementById('fileInput').click();
+  };
 
   window.mostrarArchivo = function (event) {
     const file = event.target.files[0];
     if (file) {
-      // Verificar que es un archivo CSV
       if (!file.name.toLowerCase().endsWith('.csv')) {
         alert('Por favor selecciona un archivo CSV válido');
         return;
       }
-      
-      document.querySelector(".icono").style.display = "none";
-      const fileInfo = document.getElementById("file-info");
-      const fileName = document.getElementById("file-name");
-      const fileSize = document.getElementById("file-size");
-      
-      fileName.textContent = ` ${file.name}`;
-      fileSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
-      
-      fileInfo.style.display = "block";
-      document.getElementById("removeBtn").style.display = "block";
+
+      document.querySelector('.icono').style.display = 'none';
+      document.getElementById('file-info').style.display = 'block';
+      document.getElementById('file-name').textContent = file.name;
+      document.getElementById('file-size').textContent = `${(file.size / 1024).toFixed(1)} KB`;
+      document.getElementById('removeBtn').style.display = 'block';
     }
+  };
+
+  function limpiarUploadBox() {
+    document.getElementById('file-info').style.display = 'none';
+    document.querySelector('.icono').style.display = 'block';
+    document.getElementById('removeBtn').style.display = 'none';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('resultado-text').textContent = '(sube un archivo CSV con datos EEG)';
+    document.getElementById('confianza-text').style.display = 'none';
   }
 
-    // === NUEVA FUNCIÓN ELIMINAR ARCHIVO CON MODAL ===
-    window.eliminarArchivo = function (e) {
-      e.stopPropagation();
-      const usuario = localStorage.getItem('usuario');
-      const modalConfirmarGuardar = document.getElementById('modalConfirmarGuardar');
-  
-      // Si no hay usuario, borrar directamente
-      if (!usuario) {
-        limpiarUploadBox();
-        return;
-      }
-  
-      // Mostrar modal de confirmación
-      modalConfirmarGuardar.style.display = 'flex';
-    };
-  
-    // Limpia la caja de carga (upload box)
-    function limpiarUploadBox() {
-      document.getElementById("file-info").style.display = "none";
-      document.querySelector(".icono").style.display = "block";
-      document.getElementById("removeBtn").style.display = "none";
-      document.getElementById("fileInput").value = "";
-      document.getElementById("resultado-text").textContent = "(sube un archivo CSV con datos EEG)";
-      document.getElementById("confianza-text").style.display = "none";
-    }
-  
-  // Función para analizar EEG
-  window.analizarEEG = async function() {
-    const fileInput = document.getElementById("fileInput");
-    const file = fileInput.files[0];
-    
-    if (!file) {
-      alert("Por favor selecciona un archivo CSV con datos EEG");
-      return;
-    }
-    
-    const loading = document.getElementById("loading");
-    const resultadoText = document.getElementById("resultado-text");
-    const confianzaText = document.getElementById("confianza-text");
-    
-    // Mostrar loading
-    loading.style.display = "block";
-    resultadoText.textContent = "Procesando...";
-    confianzaText.style.display = "none";
-    
-    try {
-      const formData = new FormData();
-      formData.append('eegFile', file);
-      
-      // Agregar información del usuario si está logueado
-      const usuario = localStorage.getItem('usuario');
-      if (usuario) {
-        formData.append('usuario', usuario);
-      }
-      
-      const response = await fetch('/api/analizar-eeg', {
-        method: 'POST',
-        body: formData
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        resultadoText.textContent = data.resultado;
-        confianzaText.textContent = `Confianza: ${(data.confianza * 100).toFixed(1)}%`;
-        confianzaText.style.display = "block";
-        
-        // Cambiar color según el resultado
-        if (data.resultado.toLowerCase().includes('positivo')) {
-          resultadoText.style.color = '#4CAF50';
-        } else if (data.resultado.toLowerCase().includes('negativo')) {
-          resultadoText.style.color = '#f44336';
-        } else {
-          resultadoText.style.color = '#FF9800';
-        }
-        
-        console.log(" Análisis completado:", data);
-      } else {
-        resultadoText.textContent = "Error en el análisis";
-        resultadoText.style.color = '#f44336';
-        confianzaText.style.display = "none";
-        alert(data.error || "Error procesando el archivo");
-      }
-      
-    } catch (error) {
-      console.error(" Error:", error);
-      resultadoText.textContent = "Error de conexión";
-      resultadoText.style.color = '#f44336';
-      confianzaText.style.display = "none";
-      alert("Error de conexión con el servidor");
-    } finally {
-      loading.style.display = "none";
-    }
-  }
-});
-
-// ===== MODAL HISTORIAL =====
-const modalHistorial = document.getElementById("modalHistorial");
-const cerrarHistorial = document.querySelector(".cerrar-historial");
-const btnHistorial = document.getElementById("btnHistorial");
-
-btnHistorial.addEventListener("click", () => {
-  modalHistorial.style.display = "flex";
-});
-
-cerrarHistorial.addEventListener("click", () => {
-  modalHistorial.style.display = "none";
-});
-
-window.addEventListener("click", (e) => {
-  if (e.target === modalHistorial) {
-    modalHistorial.style.display = "none";
-  }
-
-    // === MODAL GUARDAR EN HISTORIAL ===
-
-  // Obtenemos los elementos SOLO cuando el DOM ya está cargado
+  // === MODAL GUARDAR / FORMULARIO ===
   const modalConfirmarGuardar = document.getElementById('modalConfirmarGuardar');
   const modalFormularioGuardar = document.getElementById('modalFormularioGuardar');
   const btnGuardar = document.getElementById('btnGuardar');
@@ -366,66 +278,130 @@ window.addEventListener("click", (e) => {
   const cerrarFormularioGuardar = document.getElementById('cerrarFormularioGuardar');
   const formGuardarAnalisis = document.getElementById('formGuardarAnalisis');
 
-  // Función auxiliar para limpiar el upload box
-  function limpiarUploadBox() {
-    document.getElementById("file-info").style.display = "none";
-    document.querySelector(".icono").style.display = "block";
-    document.getElementById("removeBtn").style.display = "none";
-    document.getElementById("fileInput").value = "";
-    document.getElementById("resultado-text").textContent = "(sube un archivo CSV con datos EEG)";
-    document.getElementById("confianza-text").style.display = "none";
-  }
-
-  // Sobrescribimos eliminarArchivo
   window.eliminarArchivo = function (e) {
     e.stopPropagation();
     const usuario = localStorage.getItem('usuario');
-
     if (!usuario) {
       limpiarUploadBox();
       return;
     }
-
     modalConfirmarGuardar.style.display = 'flex';
   };
 
-  // Si elige "No guardar"
   btnNoGuardar.addEventListener('click', () => {
     modalConfirmarGuardar.style.display = 'none';
     limpiarUploadBox();
   });
 
-  // Si elige "Guardar"
   btnGuardar.addEventListener('click', () => {
     modalConfirmarGuardar.style.display = 'none';
-
-    const fileInput = document.getElementById("fileInput");
-    const file = fileInput.files[0];
-    const resultadoText = document.getElementById("resultado-text").textContent;
-
-    document.getElementById("archivoAdjunto").textContent = file ? file.name : "(sin archivo)";
-    document.getElementById("resultadoActual").textContent = resultadoText;
-
+    const file = document.getElementById('fileInput').files[0];
+    document.getElementById('archivoAdjunto').textContent = file ? file.name : '(sin archivo)';
+    document.getElementById('resultadoActual').textContent = document.getElementById('resultado-text').textContent;
     modalFormularioGuardar.style.display = 'flex';
   });
 
-  // Cierra el modal del formulario
   cerrarFormularioGuardar.addEventListener('click', () => {
     modalFormularioGuardar.style.display = 'none';
   });
 
-  // Envío del formulario (por ahora solo simula)
-  formGuardarAnalisis.addEventListener('submit', (e) => {
+  formGuardarAnalisis.addEventListener('submit', async (e) => {
     e.preventDefault();
-    alert('✅ El análisis se guardaría aquí (simulado)');
-    modalFormularioGuardar.style.display = 'none';
-    limpiarUploadBox();
+  
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario) {
+      alert('Debes iniciar sesión');
+      return;
+    }
+  
+    const file = document.getElementById('fileInput').files[0];
+    const nombre = document.getElementById('nombreAnalisis').value.trim();
+    const descripcion = document.getElementById('descripcionAnalisis').value.trim();
+    const resultado = document.getElementById('resultadoActual').textContent;
+    const confianza = document.getElementById('confianza-text').textContent.replace('Confianza: ', '').replace('%', '');
+  
+    if (!nombre || !file) {
+      alert('Por favor ingresa un nombre y selecciona un archivo');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('usuarioId', usuario.id);
+    formData.append('nombre', nombre);
+    formData.append('descripcion', descripcion);
+    formData.append('resultado', resultado);
+    formData.append('confianza', confianza);
+    formData.append('archivo', file);
+  
+    try {
+      const res = await fetch('http://localhost:3000/api/guardar-analisis', {
+        method: 'POST',
+        body: formData
+      });
+  
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Análisis guardado correctamente');
+        modalFormularioGuardar.style.display = 'none';
+        limpiarUploadBox();
+        await cargarHistorial(); // refresca historial sin recargar página
+      } else {
+        alert('❌ Error al guardar análisis');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión con el servidor');
+    }
   });
+  
 
-  // Cierra los modales si se hace clic fuera
   window.addEventListener('click', (e) => {
     if (e.target === modalConfirmarGuardar) modalConfirmarGuardar.style.display = 'none';
     if (e.target === modalFormularioGuardar) modalFormularioGuardar.style.display = 'none';
   });
 
+  // ===== ANALIZAR EEG =====
+  window.analizarEEG = async function () {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (!file) {
+      alert('Por favor selecciona un archivo CSV con datos EEG');
+      return;
+    }
+
+    const loading = document.getElementById('loading');
+    const resultadoText = document.getElementById('resultado-text');
+    const confianzaText = document.getElementById('confianza-text');
+
+    loading.style.display = 'block';
+    resultadoText.textContent = 'Procesando...';
+    confianzaText.style.display = 'none';
+
+    try {
+      const formData = new FormData();
+      formData.append('eegFile', file);
+      const usuario = localStorage.getItem('usuario');
+      if (usuario) formData.append('usuario', usuario);
+
+      const response = await fetch('/api/analizar-eeg', { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (data.success) {
+        resultadoText.textContent = data.resultado;
+        confianzaText.textContent = `Confianza: ${(data.confianza * 100).toFixed(1)}%`;
+        confianzaText.style.display = 'block';
+        if (data.resultado.toLowerCase().includes('positivo')) resultadoText.style.color = '#4CAF50';
+        else if (data.resultado.toLowerCase().includes('negativo')) resultadoText.style.color = '#f44336';
+        else resultadoText.style.color = '#FF9800';
+      } else {
+        resultadoText.textContent = 'Error en el análisis';
+        resultadoText.style.color = '#f44336';
+      }
+    } catch {
+      resultadoText.textContent = 'Error de conexión';
+      resultadoText.style.color = '#f44336';
+    } finally {
+      loading.style.display = 'none';
+    }
+  };
 });
