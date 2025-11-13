@@ -154,36 +154,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   
     function mostrarHistorialEnModal(historial) {
-      const historialLista = document.getElementById('historialLista');
-      if (historial.length === 0) {
-        historialLista.innerHTML = '<p>No hay análisis previos</p>';
+      const historialLista = document.getElementById("historialLista");
+    
+      if (!historial || historial.length === 0) {
+        historialLista.innerHTML = `
+          <p style="text-align:center; color:#4A148C; font-family:'Rubik', sans-serif;">
+            No hay análisis guardados todavía.
+          </p>`;
         return;
       }
-  
-      historialLista.innerHTML = historial.map(item => {
+    
+      historialLista.innerHTML = ""; // limpia el contenido anterior
+    
+      historial.forEach((item) => {
         const fecha = new Date(item.fecha).toLocaleString();
-        const confianza = item.confianza ? `${parseFloat(item.confianza).toFixed(1)}%` : '–';
-        const descripcion = item.descripcion ? `<p class="desc">${item.descripcion}</p>` : '';
-        const resultado = item.resultado || 'Sin resultado';
-  
-        return `
-          <div class="historial-item">
-            <div class="archivo-nombre">
-              <a href="${item.archivo_url}" target="_blank" download="${item.archivo_nombre}">
-                📄 ${item.archivo_nombre}
-              </a>
-            </div>
-            <h3>${item.nombre}</h3>
-            ${descripcion}
-            <div class="historial-detalles">
-              <span class="resultado">${resultado}</span>
-              <span class="confianza">${confianza}</span>
-              <span class="fecha">${fecha}</span>
-            </div>
+        const confianza = item.confianza ? `${parseFloat(item.confianza).toFixed(1)}%` : "–";
+        const descripcion = item.descripcion ? item.descripcion : "Sin descripción";
+    
+        const div = document.createElement("div");
+        div.classList.add("historial-item");
+        div.dataset.id = item.id;
+    
+        div.innerHTML = `
+          <div class="archivo-nombre">
+            <a href="${item.archivo_url}" target="_blank" download="${item.archivo_nombre}">
+              📄 ${item.archivo_nombre}
+            </a>
           </div>
+          <h3>${item.nombre}</h3>
+          <p class="desc">${descripcion}</p>
+          <div class="historial-detalles">
+            <span class="resultado">${item.resultado}</span>
+            <span class="confianza">Confianza: ${confianza}</span>
+            <span class="fecha">${fecha}</span>
+          </div>
+          <button class="eliminar-analisis">🗑️ Eliminar</button>
         `;
-      }).join('');
+    
+        historialLista.appendChild(div);
+      });
+    
+      // === FUNCIONALIDAD: ELIMINAR ANÁLISIS ===
+      document.querySelectorAll(".eliminar-analisis").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          const id = e.target.closest(".historial-item").dataset.id;
+          if (confirm("¿Deseas eliminar este análisis definitivamente?")) {
+            try {
+              const res = await fetch(`http://localhost:3000/api/analisis/${id}`, {
+                method: "DELETE",
+              });
+              const data = await res.json();
+              if (data.success) {
+                alert("✅ Análisis eliminado correctamente");
+                await cargarHistorial();
+              } else {
+                alert("❌ Error al eliminar el análisis");
+              }
+            } catch (err) {
+              console.error("Error al eliminar:", err);
+              alert("Error al conectar con el servidor");
+            }
+          }
+        });
+      });
     }
+    
+    
   
 
   formRegistroForm.addEventListener('submit', async (e) => {

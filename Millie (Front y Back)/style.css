@@ -433,3 +433,65 @@ input {
   text-decoration: underline;
   color: #6A1B9A;
 }
+
+#historialLista {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.historial-item {
+  background: #f3e5f5;
+  color: #4a148c;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-family: "Rubik", sans-serif;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.historial-item:hover {
+  background: #e1bee7;
+}
+
+.archivo-nombre a {
+  color: #4a148c;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.archivo-nombre a:hover {
+  text-decoration: underline;
+}
+
+.desc {
+  font-size: 0.9em;
+  color: #6a1b9a;
+  margin-top: 5px;
+}
+
+.historial-detalles {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+.eliminar-analisis {
+  margin-top: 8px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.eliminar-analisis:hover {
+  background: #d32f2f;
+  transform: scale(1.05);
+}

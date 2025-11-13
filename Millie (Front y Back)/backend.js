@@ -1,25 +1,20 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const multer = require('multer');
+const bodyParser = require('body-parser');
 const { createClient } = require('@supabase/supabase-js');
-const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
 
+// === CONFIG ===
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('.'));
+const upload = multer({ storage: multer.memoryStorage() });
 
-// === CONFIGURACIÓN DE SUPABASE ===
-const supabase = createClient(
-  'https://snyxnocwfmkeakzjslzd.supabase.co', // 👉 reemplazá con tu URL real
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNueXhub2N3Zm1rZWFrempzbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NDg2MjcsImV4cCI6MjA3ODQyNDYyN30.GD-9DohC1Sz1yphNd0agnzEWzli14_TlsbuNsJuSrLA' // 👉 reemplazá con tu clave anon pública
-);
-
-// === CONFIGURACIÓN DE POSTGRES ===
+// === CONEXIÓN BASE DE DATOS POSTGRES / NEON ===
 const pool = new Pool({
   host: 'ep-steep-boat-acdiqbkj-pooler.sa-east-1.aws.neon.tech',
   database: 'neondb',
@@ -29,42 +24,45 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// === MULTER para manejar archivos subidos ===
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+// === SUPABASE ===
+const SUPABASE_URL = 'https://snyxnocwfmkeakzjslzd.supabase.co'; // ⚠️ reemplazá con tu URL real
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNueXhub2N3Zm1rZWFrempzbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NDg2MjcsImV4cCI6MjA3ODQyNDYyN30.GD-9DohC1Sz1yphNd0agnzEWzli14_TlsbuNsJuSrLA'; // ⚠️ reemplazá con tu clave de Supabase
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// === CREAR TABLAS ===
+// === TABLAS ===
 (async () => {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS usuarios (
-      id SERIAL PRIMARY KEY,
-      nombre VARCHAR(50) NOT NULL,
-      email VARCHAR(100) NOT NULL UNIQUE,
-      password VARCHAR(100) NOT NULL
-    );
-  `);
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id SERIAL PRIMARY KEY,
+        nombre VARCHAR(50) NOT NULL,
+        email VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(100) NOT NULL
+      );
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS analisis (
-      id SERIAL PRIMARY KEY,
-      usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
-      nombre VARCHAR(100) NOT NULL,
-      descripcion TEXT,
-      archivo_nombre VARCHAR(200),
-      archivo_url TEXT,
-      resultado TEXT,
-      confianza NUMERIC(5,2),
-      fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-
-  console.log('✅ Tablas listas');
+      CREATE TABLE IF NOT EXISTS analisis (
+        id SERIAL PRIMARY KEY,
+        usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+        nombre TEXT NOT NULL,
+        descripcion TEXT,
+        resultado TEXT,
+        confianza NUMERIC,
+        archivo_nombre TEXT,
+        archivo_url TEXT,
+        fecha TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    console.log("✅ Tablas listas");
+  } catch (err) {
+    console.error("❌ Error creando tablas:", err);
+  }
 })();
 
-// === RUTAS DE USUARIOS ===
+// === REGISTRO DE USUARIO ===
 app.post('/api/registro', async (req, res) => {
   const { nombre, email, password } = req.body;
-  if (!nombre || !email || !password) return res.status(400).json({ error: 'Faltan datos' });
+  if (!nombre || !email || !password)
+    return res.status(400).json({ error: "Faltan datos" });
 
   try {
     const result = await pool.query(
@@ -73,91 +71,115 @@ app.post('/api/registro', async (req, res) => {
     );
     res.json({ success: true, usuario: result.rows[0] });
   } catch (err) {
-    console.error('Error registrando usuario:', err);
-    res.status(500).json({ error: 'Error al registrar usuario' });
+    console.error("❌ Error registrando usuario:", err);
+    res.status(500).json({ error: "Error al registrar usuario" });
   }
 });
 
+// === LOGIN ===
 app.post('/api/login', async (req, res) => {
   const { nombre, password } = req.body;
-  if (!nombre || !password) return res.status(400).json({ error: 'Faltan datos' });
+  if (!nombre || !password)
+    return res.status(400).json({ error: "Faltan datos" });
 
   try {
     const result = await pool.query(
       'SELECT id, nombre FROM usuarios WHERE nombre = $1 AND password = $2',
       [nombre, password]
     );
-
     if (result.rows.length === 0)
-      return res.status(401).json({ error: 'Usuario o contraseña incorrecta' });
+      return res.status(401).json({ error: "Usuario o contraseña incorrecta" });
 
     res.json({ success: true, usuario: result.rows[0] });
   } catch (err) {
-    console.error('Error al iniciar sesión:', err);
-    res.status(500).json({ error: 'Error al iniciar sesión' });
+    console.error("❌ Error al iniciar sesión:", err);
+    res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });
 
-// === GUARDAR ANÁLISIS (con archivo real en Supabase Storage) ===
+// === GUARDAR ANÁLISIS ===
 app.post('/api/guardar-analisis', upload.single('archivo'), async (req, res) => {
   const { usuarioId, nombre, descripcion, resultado, confianza } = req.body;
   const file = req.file;
 
-  if (!usuarioId || !nombre || !resultado || !file) {
-    return res.status(400).json({ error: 'Faltan datos obligatorios o archivo' });
-  }
+  if (!usuarioId || !file)
+    return res.status(400).json({ success: false, error: 'Faltan datos o archivo' });
 
   try {
-    const ext = path.extname(file.originalname);
-    const fileName = `${Date.now()}_${file.originalname}`;
+    const filePath = `${usuarioId}/${Date.now()}_${file.originalname}`;
 
-    // Subir archivo a Supabase Storage
-    const { data, error } = await supabase.storage
+    // Subir archivo a Supabase
+    const { error: uploadError } = await supabase.storage
       .from('analisis')
-      .upload(fileName, file.buffer, {
-        contentType: 'text/csv',
-        upsert: false,
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
       });
 
-    if (error) throw error;
+    if (uploadError) throw uploadError;
 
     // Obtener URL pública
-    const { data: publicURLData } = supabase.storage
-      .from('analisis')
-      .getPublicUrl(fileName);
-    const fileURL = publicURLData.publicUrl;
+    const { data: urlData } = supabase.storage.from('analisis').getPublicUrl(filePath);
+    const archivo_url = urlData.publicUrl;
 
-    // Guardar en base de datos
-    const result = await pool.query(
-      `INSERT INTO analisis (usuario_id, nombre, descripcion, archivo_nombre, archivo_url, resultado, confianza)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING *`,
-      [usuarioId, nombre, descripcion, file.originalname, fileURL, resultado, confianza || null]
+    // Guardar en la base de datos
+    await pool.query(
+      `INSERT INTO analisis (usuario_id, nombre, descripcion, resultado, confianza, archivo_nombre, archivo_url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [usuarioId, nombre, descripcion, resultado, confianza, file.originalname, archivo_url]
     );
 
-    res.json({ success: true, analisis: result.rows[0] });
-  } catch (err) {
-    console.error('Error guardando análisis:', err);
-    res.status(500).json({ error: 'Error al guardar análisis' });
+    res.json({ success: true, mensaje: 'Análisis guardado correctamente' });
+  } catch (error) {
+    console.error('❌ Error guardando análisis:', error);
+    res.status(500).json({ success: false, error: 'Error guardando análisis' });
   }
 });
 
-// === HISTORIAL DE USUARIO ===
+// === OBTENER HISTORIAL (solo del usuario logueado) ===
 app.get('/api/historial/:usuarioId', async (req, res) => {
   const { usuarioId } = req.params;
   try {
     const result = await pool.query(
-      `SELECT * FROM analisis WHERE usuario_id = $1 ORDER BY fecha DESC`,
+      `SELECT id, nombre, descripcion, resultado, confianza, archivo_nombre, archivo_url, fecha
+       FROM analisis
+       WHERE usuario_id = $1
+       ORDER BY fecha DESC`,
       [usuarioId]
     );
     res.json({ success: true, historial: result.rows });
-  } catch (err) {
-    console.error('Error obteniendo historial:', err);
-    res.status(500).json({ error: 'Error al obtener historial' });
+  } catch (error) {
+    console.error('❌ Error cargando historial:', error);
+    res.status(500).json({ success: false, error: 'Error al cargar el historial' });
   }
 });
 
-app.listen(port, () => console.log(`🚀 Servidor en http://localhost:${port}`));
+// === ELIMINAR ANÁLISIS ===
+app.delete('/api/analisis/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Primero obtener el archivo para borrarlo del bucket
+    const { rows } = await pool.query('SELECT archivo_url, archivo_nombre FROM analisis WHERE id = $1', [id]);
+    if (rows.length === 0) return res.status(404).json({ success: false, error: 'Análisis no encontrado' });
+
+    const archivo = rows[0];
+    const path = decodeURIComponent(archivo.archivo_url.split('/').pop());
+    await supabase.storage.from('analisis').remove([path]);
+
+    // Luego borrarlo de la DB
+    await pool.query('DELETE FROM analisis WHERE id = $1', [id]);
+    res.json({ success: true, mensaje: 'Análisis eliminado correctamente' });
+  } catch (error) {
+    console.error('❌ Error eliminando análisis:', error);
+    res.status(500).json({ success: false, error: 'Error eliminando análisis' });
+  }
+});
+
+// === INICIAR SERVIDOR ===
+app.listen(port, () => {
+  console.log(`🚀 Servidor en http://localhost:${port}`);
+});
+
 
 
 
