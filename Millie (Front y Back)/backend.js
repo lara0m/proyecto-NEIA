@@ -96,16 +96,21 @@ app.post('/api/login', async (req, res) => {
 });
 
 app.post('/api/guardar-analisis', upload.single('archivo'), async (req, res) => {
-  const { usuarioId, nombre, descripcion, resultado, confianza } = req.body;
-  const file = req.file;
-
-  if (!usuarioId || !file)
-    return res.status(400).json({ success: false, error: 'Faltan datos o archivo' });
-
   try {
+    const { usuarioId, nombre, descripcion, resultado, confianza } = req.body;
+    const file = req.file;
+
+    if (!usuarioId || !file) {
+      return res.status(400).json({ success: false, error: 'Faltan datos o archivo' });
+    }
+
+    // 🧩 Corregir confianza vacía o inválida
+    const confianzaNum = confianza && !isNaN(confianza) ? parseFloat(confianza) : null;
+
+    // 📁 Crear ruta de archivo única
     const filePath = `${usuarioId}/${Date.now()}_${file.originalname}`;
 
-    
+    // ⬆️ Subir a Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from('analisis')
       .upload(filePath, file.buffer, {
@@ -114,23 +119,26 @@ app.post('/api/guardar-analisis', upload.single('archivo'), async (req, res) => 
 
     if (uploadError) throw uploadError;
 
-    
+    // 🌐 Obtener URL pública
     const { data: urlData } = supabase.storage.from('analisis').getPublicUrl(filePath);
     const archivo_url = urlData.publicUrl;
 
-    
+    // 🗃️ Guardar en la base de datos (usando confianzaNum)
     await pool.query(
-      `INSERT INTO analisis (usuario_id, nombre, descripcion, resultado, confianza, archivo_nombre, archivo_url)
+      `INSERT INTO analisis 
+        (usuario_id, nombre, descripcion, resultado, confianza, archivo_nombre, archivo_url)
        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [usuarioId, nombre, descripcion, resultado, confianza, file.originalname, archivo_url]
+      [usuarioId, nombre, descripcion, resultado, confianzaNum, file.originalname, archivo_url]
     );
 
-    res.json({ success: true, mensaje: 'Análisis guardado correctamente' });
+    res.json({ success: true, mensaje: '✅ Análisis guardado correctamente' });
+
   } catch (error) {
     console.error('Error guardando análisis:', error);
     res.status(500).json({ success: false, error: 'Error guardando análisis' });
   }
 });
+
 
 
 app.get('/api/historial/:usuarioId', async (req, res) => {
@@ -201,8 +209,5 @@ app.delete('/api/analisis/:id', async (req, res) => {
     res.status(500).json({ success: false, error: 'Error interno del servidor' });
   }
 });
-
-
-
 
 //cd "C:\Users\49006614\Documents\GitHub\proyecto-NEIA\Millie (front y back)"
