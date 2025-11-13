@@ -74,7 +74,42 @@ Base de Datos PostgreSQL
 - ✅ **Precisión**: 67% en test set (2/3 emociones predichas correctamente)
 - ✅ **Escalabilidad**: Arquitectura preparada para crecimiento
 
-### 🚀 **DEMOSTRACIÓN PRÁCTICA**
+### 💻 **BACKEND HEREDADO + FLASK** *(45 segundos)*
+
+**Backend Node.js existente incluía:**
+- ✅ **Autenticación**: Registro/login de usuarios
+- ✅ **Base de datos**: PostgreSQL con historial de análisis  
+- ✅ **Carga de archivos**: Validación y procesamiento CSV
+- ✅ **API REST**: Endpoints para frontend
+
+**Problema**: ¿Cómo agregar IA sin reescribir todo?
+
+**Solución**: **Flask como microservicio**
+```
+Backend Node.js → Flask Python → Modelo Keras
+     ↑               ↑            ↑
+  (Existía)      (Agregamos)   (Teníamos)
+```
+
+### 🐍 **FLASK: MICROSERVICIO DE IA** *(30 segundos)*
+
+**¿Qué es Flask?**
+- Framework web **minimalista** de Python
+- Perfecto para crear **microservicios especializados**
+- **1 archivo, 1 endpoint**: `/predict`
+
+**¿Por qué Flask en este proyecto?**
+```
+Backend heredado → Solo necesitaba agregar IA
+Flask → Solución rápida sin reescribir todo
+```
+
+**¿Qué logramos?**
+- ✅ **Reutilizar** código ML existente (Keras + StandardScaler)
+- ✅ **0 días** reescribiendo - solo integrar
+- ✅ **Separación perfecta**: Web ≠ IA
+
+### �🚀 **DEMOSTRACIÓN PRÁCTICA**
 
 *[Mostrar la interfaz funcionando con archivos de test]*
 
