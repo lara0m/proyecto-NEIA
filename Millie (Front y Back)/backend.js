@@ -9,12 +9,11 @@ require('dotenv').config();
 const app = express();
 const port = 3000;
 
-// === CONFIG ===
+
 app.use(cors());
 app.use(bodyParser.json());
 const upload = multer({ storage: multer.memoryStorage() });
 
-// === CONEXIÓN BASE DE DATOS POSTGRES / NEON ===
 const pool = new Pool({
   host: 'ep-steep-boat-acdiqbkj-pooler.sa-east-1.aws.neon.tech',
   database: 'neondb',
@@ -24,12 +23,12 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// === SUPABASE ===
+
 const SUPABASE_URL = 'https://snyxnocwfmkeakzjslzd.supabase.co'; // ⚠️ reemplazá con tu URL real
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNueXhub2N3Zm1rZWFrempzbHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NDg2MjcsImV4cCI6MjA3ODQyNDYyN30.GD-9DohC1Sz1yphNd0agnzEWzli14_TlsbuNsJuSrLA'; // ⚠️ reemplazá con tu clave de Supabase
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// === TABLAS ===
+
 (async () => {
   try {
     await pool.query(`
@@ -52,13 +51,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
         fecha TIMESTAMP DEFAULT NOW()
       );
     `);
-    console.log("✅ Tablas listas");
+    console.log("Tablas listas");
   } catch (err) {
-    console.error("❌ Error creando tablas:", err);
+    console.error(" Error creando tablas:", err);
   }
 })();
 
-// === REGISTRO DE USUARIO ===
+
 app.post('/api/registro', async (req, res) => {
   const { nombre, email, password } = req.body;
   if (!nombre || !email || !password)
@@ -71,12 +70,11 @@ app.post('/api/registro', async (req, res) => {
     );
     res.json({ success: true, usuario: result.rows[0] });
   } catch (err) {
-    console.error("❌ Error registrando usuario:", err);
+    console.error("Error registrando usuario:", err);
     res.status(500).json({ error: "Error al registrar usuario" });
   }
 });
 
-// === LOGIN ===
 app.post('/api/login', async (req, res) => {
   const { nombre, password } = req.body;
   if (!nombre || !password)
@@ -92,12 +90,11 @@ app.post('/api/login', async (req, res) => {
 
     res.json({ success: true, usuario: result.rows[0] });
   } catch (err) {
-    console.error("❌ Error al iniciar sesión:", err);
+    console.error("Error al iniciar sesión:", err);
     res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });
 
-// === GUARDAR ANÁLISIS ===
 app.post('/api/guardar-analisis', upload.single('archivo'), async (req, res) => {
   const { usuarioId, nombre, descripcion, resultado, confianza } = req.body;
   const file = req.file;
@@ -108,7 +105,7 @@ app.post('/api/guardar-analisis', upload.single('archivo'), async (req, res) => 
   try {
     const filePath = `${usuarioId}/${Date.now()}_${file.originalname}`;
 
-    // Subir archivo a Supabase
+    
     const { error: uploadError } = await supabase.storage
       .from('analisis')
       .upload(filePath, file.buffer, {
@@ -117,11 +114,11 @@ app.post('/api/guardar-analisis', upload.single('archivo'), async (req, res) => 
 
     if (uploadError) throw uploadError;
 
-    // Obtener URL pública
+    
     const { data: urlData } = supabase.storage.from('analisis').getPublicUrl(filePath);
     const archivo_url = urlData.publicUrl;
 
-    // Guardar en la base de datos
+    
     await pool.query(
       `INSERT INTO analisis (usuario_id, nombre, descripcion, resultado, confianza, archivo_nombre, archivo_url)
        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
@@ -130,12 +127,12 @@ app.post('/api/guardar-analisis', upload.single('archivo'), async (req, res) => 
 
     res.json({ success: true, mensaje: 'Análisis guardado correctamente' });
   } catch (error) {
-    console.error('❌ Error guardando análisis:', error);
+    console.error('Error guardando análisis:', error);
     res.status(500).json({ success: false, error: 'Error guardando análisis' });
   }
 });
 
-// === OBTENER HISTORIAL (solo del usuario logueado) ===
+
 app.get('/api/historial/:usuarioId', async (req, res) => {
   const { usuarioId } = req.params;
   try {
@@ -148,17 +145,17 @@ app.get('/api/historial/:usuarioId', async (req, res) => {
     );
     res.json({ success: true, historial: result.rows });
   } catch (error) {
-    console.error('❌ Error cargando historial:', error);
+    console.error('Error cargando historial:', error);
     res.status(500).json({ success: false, error: 'Error al cargar el historial' });
   }
 });
 
-// === ELIMINAR ANÁLISIS ===
+
 app.delete('/api/analisis/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Primero obtener el archivo para borrarlo del bucket
+    
     const { rows } = await pool.query('SELECT archivo_url, archivo_nombre FROM analisis WHERE id = $1', [id]);
     if (rows.length === 0) return res.status(404).json({ success: false, error: 'Análisis no encontrado' });
 
@@ -166,18 +163,43 @@ app.delete('/api/analisis/:id', async (req, res) => {
     const path = decodeURIComponent(archivo.archivo_url.split('/').pop());
     await supabase.storage.from('analisis').remove([path]);
 
-    // Luego borrarlo de la DB
+    
     await pool.query('DELETE FROM analisis WHERE id = $1', [id]);
     res.json({ success: true, mensaje: 'Análisis eliminado correctamente' });
   } catch (error) {
-    console.error('❌ Error eliminando análisis:', error);
+    console.error('Error eliminando análisis:', error);
     res.status(500).json({ success: false, error: 'Error eliminando análisis' });
   }
 });
 
-// === INICIAR SERVIDOR ===
+
 app.listen(port, () => {
-  console.log(`🚀 Servidor en http://localhost:${port}`);
+  console.log(`Servidor en http://localhost:${port}`);
+});
+
+
+app.delete('/api/analisis/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    
+    const { rows } = await pool.query('SELECT archivo_url FROM analisis WHERE id = $1', [id]);
+    if (rows.length === 0) return res.json({ success: false, error: 'Análisis no encontrado' });
+
+    const archivoUrl = rows[0].archivo_url;
+    const archivoNombre = archivoUrl.split('/').pop();
+
+    
+    await supabase.storage.from('analisis').remove([archivoNombre]);
+
+    
+    await pool.query('DELETE FROM analisis WHERE id = $1', [id]);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error al eliminar análisis:', err);
+    res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  }
 });
 
 

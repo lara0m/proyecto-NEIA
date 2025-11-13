@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistroForm = formRegistro.querySelector('form');
   const formLoginForm = formLogin.querySelector('form');
 
-  // ===== MODAL LOGIN / REGISTRO =====
   botonSesion.addEventListener('click', () => {
     modal.style.display = 'flex';
     formRegistro.classList.add('activo');
@@ -31,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     formRegistro.classList.add('activo');
   });
 
-  // ===== AVATAR DE USUARIO =====
   function crearAvatar(nombreUsuario) {
     const iniciales = nombreUsuario.slice(0, 2).toUpperCase();
     const avatarContainer = document.createElement('div');
@@ -69,160 +67,115 @@ document.addEventListener('DOMContentLoaded', () => {
     botonSesion.replaceWith(avatarContainer);
   }
 
-  // ===== HISTORIAL =====
-  function mostrarHistorial() {
-    const btnHistorial = document.getElementById('btnHistorial');
-    const modalHistorial = document.getElementById('modalHistorial');
-    const cerrarHistorial = document.querySelector('.cerrar-historial');
+function mostrarHistorial() {
+  const btnHistorial = document.getElementById('btnHistorial');
+  const modalHistorial = document.getElementById('modalHistorial');
+  const cerrarHistorial = document.querySelector('.cerrar-historial');
 
-    btnHistorial.style.display = 'block';
+  btnHistorial.style.display = 'block';
 
-    btnHistorial.addEventListener('click', async () => {
-      modalHistorial.style.display = 'flex';
-      await cargarHistorial();
-    });
+  btnHistorial.addEventListener('click', async () => {
+    modalHistorial.style.display = 'flex';
+    await cargarHistorial(); 
+  });
 
-    cerrarHistorial.addEventListener('click', () => {
+  cerrarHistorial.addEventListener('click', () => {
+    modalHistorial.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modalHistorial) {
       modalHistorial.style.display = 'none';
-    });
+    }
+  });
+}
 
-    window.addEventListener('click', (e) => {
-      if (e.target === modalHistorial) {
-        modalHistorial.style.display = 'none';
-      }
-    });
+async function cargarHistorial() {
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  if (!usuario || !usuario.id) return;
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/historial/${usuario.id}`);
+    const data = await response.json();
+
+    if (data.success && Array.isArray(data.historial)) {
+      mostrarHistorialEnModal(data.historial);
+    } else {
+      console.error('Error cargando historial:', data.error || 'Formato incorrecto');
+      document.getElementById('historialLista').innerHTML = '<p>No hay análisis guardados</p>';
+    }
+  } catch (error) {
+    console.error('Error de conexión al cargar historial:', error);
+  }
+}
+
+function mostrarHistorialEnModal(historial) {
+  const historialLista = document.getElementById('historialLista');
+
+  if (!historial || historial.length === 0) {
+    historialLista.innerHTML = `
+      <p style="text-align:center; color:#4A148C; font-family:'Rubik', sans-serif;">
+        No hay análisis guardados todavía.
+      </p>`;
+    return;
   }
 
-  async function cargarHistorial() {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (!usuario || !usuario.id) return;
+  historialLista.innerHTML = ""; 
 
-    try {
-      const response = await fetch(`/api/historial/${usuario.id}`);
-      const data = await response.json();
+  historial.forEach((item) => {
+    const fecha = new Date(item.fecha).toLocaleString();
+    const confianza = item.confianza ? `${parseFloat(item.confianza).toFixed(1)}%` : "–";
+    const descripcion = item.descripcion ? item.descripcion : "Sin descripción";
 
-      if (data.success) {
-        mostrarHistorialEnModal(data.historial);
-      } else {
-        console.error('Error cargando historial:', data.error);
-      }
-    } catch (error) {
-      console.error('Error de conexión al cargar historial:', error);
-    }
-  }
+    const div = document.createElement("div");
+    div.classList.add("historial-item");
+    div.dataset.id = item.id;
 
-    // ===== HISTORIAL =====
-    function mostrarHistorial() {
-      const btnHistorial = document.getElementById('btnHistorial');
-      const modalHistorial = document.getElementById('modalHistorial');
-      const cerrarHistorial = document.querySelector('.cerrar-historial');
-  
-      btnHistorial.style.display = 'block';
-  
-      btnHistorial.addEventListener('click', async () => {
-        modalHistorial.style.display = 'flex';
-        await cargarHistorial();
-      });
-  
-      cerrarHistorial.addEventListener('click', () => {
-        modalHistorial.style.display = 'none';
-      });
-  
-      window.addEventListener('click', (e) => {
-        if (e.target === modalHistorial) {
-          modalHistorial.style.display = 'none';
-        }
-      });
-    }
-  
-    async function cargarHistorial() {
-      const usuario = JSON.parse(localStorage.getItem('usuario'));
-      if (!usuario || !usuario.id) return;
-  
-      try {
-        const response = await fetch(`/api/historial/${usuario.id}`);
-        const data = await response.json();
-  
-        if (data.success) {
-          mostrarHistorialEnModal(data.historial);
-        } else {
-          console.error('Error cargando historial:', data.error);
-        }
-      } catch (error) {
-        console.error('Error de conexión al cargar historial:', error);
-      }
-    }
-  
-    function mostrarHistorialEnModal(historial) {
-      const historialLista = document.getElementById("historialLista");
-    
-      if (!historial || historial.length === 0) {
-        historialLista.innerHTML = `
-          <p style="text-align:center; color:#4A148C; font-family:'Rubik', sans-serif;">
-            No hay análisis guardados todavía.
-          </p>`;
-        return;
-      }
-    
-      historialLista.innerHTML = ""; // limpia el contenido anterior
-    
-      historial.forEach((item) => {
-        const fecha = new Date(item.fecha).toLocaleString();
-        const confianza = item.confianza ? `${parseFloat(item.confianza).toFixed(1)}%` : "–";
-        const descripcion = item.descripcion ? item.descripcion : "Sin descripción";
-    
-        const div = document.createElement("div");
-        div.classList.add("historial-item");
-        div.dataset.id = item.id;
-    
-        div.innerHTML = `
-          <div class="archivo-nombre">
-            <a href="${item.archivo_url}" target="_blank" download="${item.archivo_nombre}">
-              📄 ${item.archivo_nombre}
-            </a>
-          </div>
-          <h3>${item.nombre}</h3>
-          <p class="desc">${descripcion}</p>
-          <div class="historial-detalles">
-            <span class="resultado">${item.resultado}</span>
-            <span class="confianza">Confianza: ${confianza}</span>
-            <span class="fecha">${fecha}</span>
-          </div>
-          <button class="eliminar-analisis">🗑️ Eliminar</button>
-        `;
-    
-        historialLista.appendChild(div);
-      });
-    
-      // === FUNCIONALIDAD: ELIMINAR ANÁLISIS ===
-      document.querySelectorAll(".eliminar-analisis").forEach((btn) => {
-        btn.addEventListener("click", async (e) => {
-          const id = e.target.closest(".historial-item").dataset.id;
-          if (confirm("¿Deseas eliminar este análisis definitivamente?")) {
-            try {
-              const res = await fetch(`http://localhost:3000/api/analisis/${id}`, {
-                method: "DELETE",
-              });
-              const data = await res.json();
-              if (data.success) {
-                alert("✅ Análisis eliminado correctamente");
-                await cargarHistorial();
-              } else {
-                alert("❌ Error al eliminar el análisis");
-              }
-            } catch (err) {
-              console.error("Error al eliminar:", err);
-              alert("Error al conectar con el servidor");
-            }
+    div.innerHTML = `
+      <div class="archivo-nombre">
+        <a href="${item.archivo_url}" target="_blank" download="${item.archivo_nombre}">
+          ${item.archivo_nombre}
+        </a>
+      </div>
+      <h3>${item.nombre}</h3>
+      <p class="desc">${descripcion}</p>
+      <div class="historial-detalles">
+        <span class="resultado">${item.resultado}</span>
+        <span class="confianza">Confianza: ${confianza}</span>
+        <span class="fecha">${fecha}</span>
+      </div>
+      <button class="eliminar-analisis">Eliminar</button>
+    `;
+
+    historialLista.appendChild(div);
+  });
+
+  document.querySelectorAll(".eliminar-analisis").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.target.closest(".historial-item").dataset.id;
+      if (confirm("¿Deseas eliminar este análisis definitivamente?")) {
+        try {
+          const res = await fetch(`http://localhost:3000/api/analisis/${id}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert("Análisis eliminado correctamente");
+            await cargarHistorial();
+          } else {
+            alert("Error al eliminar el análisis");
           }
-        });
-      });
-    }
-    
-    
-  
+        } catch (err) {
+          console.error("Error al eliminar:", err);
+          alert("Error al conectar con el servidor");
+        }
+      }
+    });
+  });
+}
 
-  formRegistroForm.addEventListener('submit', async (e) => {
+    
+     formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = formRegistroForm.querySelector('input[type="text"]').value;
     const email = formRegistroForm.querySelector('input[type="email"]').value;
@@ -276,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarHistorial();
   }
 
-  // ===== UPLOAD BOX =====
   window.abrirInput = function (e) {
     if (e.target.id !== 'removeBtn') document.getElementById('fileInput').click();
   };
@@ -306,7 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('confianza-text').style.display = 'none';
   }
 
-  // === MODAL GUARDAR / FORMULARIO ===
   const modalConfirmarGuardar = document.getElementById('modalConfirmarGuardar');
   const modalFormularioGuardar = document.getElementById('modalFormularioGuardar');
   const btnGuardar = document.getElementById('btnGuardar');
@@ -377,12 +328,12 @@ document.addEventListener('DOMContentLoaded', () => {
   
       const data = await res.json();
       if (data.success) {
-        alert('✅ Análisis guardado correctamente');
+        alert('Análisis guardado correctamente');
         modalFormularioGuardar.style.display = 'none';
         limpiarUploadBox();
-        await cargarHistorial(); // refresca historial sin recargar página
+        await cargarHistorial();
       } else {
-        alert('❌ Error al guardar análisis');
+        alert('Error al guardar análisis');
       }
     } catch (err) {
       console.error(err);
@@ -396,7 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === modalFormularioGuardar) modalFormularioGuardar.style.display = 'none';
   });
 
-  // ===== ANALIZAR EEG =====
   window.analizarEEG = async function () {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
