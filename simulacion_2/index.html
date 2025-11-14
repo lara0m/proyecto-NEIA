@@ -296,6 +296,49 @@
         </div>
     </section>
 
+
+
+    
+<!-- MODAL CONFIRMAR GUARDADO -->
+<div id="modalConfirmar" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarModalConfirmar()">&times;</span>
+      <h2>¿Deseas guardar este análisis en tu historial?</h2>
+  
+      <div class="botones-confirmar">
+        <button class="btn" onclick="abrirModalGuardar()">Guardar</button>
+        <button class="btn btn-cancelar" onclick="cancelarGuardado()">No guardar</button>
+      </div>
+    </div>
+  </div>
+  
+  
+  <!-- MODAL FORMULARIO DE GUARDADO -->
+<div id="modalFormulario" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarModalFormulario()">&times;</span>
+      <h2>Guardar análisis</h2>
+  
+      <form id="formGuardarAnalisis">
+        
+        <label>Nombre del análisis *</label>
+        <input type="text" id="nombreAnalisis" required />
+  
+        <label>Descripción (opcional)</label>
+        <input type="text" id="descripcionAnalisis" />
+  
+        <label>Resultado</label>
+        <input type="text" id="resultadoAnalisis" readonly />
+  
+        <label>Confianza</label>
+        <input type="text" id="confianzaAnalisis" readonly />
+  
+        <button type="submit" class="btn">Guardar</button>
+  
+      </form>
+    </div>
+  </div>
+  
     <!-- Sección Presentación -->
     <section id="presentacion" class="presentation-section">
         <div class="container">

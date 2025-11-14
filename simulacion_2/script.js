@@ -500,3 +500,149 @@ window.addEventListener("click", (e) => {
     modalHistorial.style.display = "none";
   }
 });
+
+const formGuardarAnalisis = document.getElementById('formGuardarAnalisis');
+
+function limpiarUploadBox() {
+  document.getElementById('file-info').style.display = 'none';
+  document.querySelector('.icono').style.display = 'block';
+  document.getElementById('removeBtn').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('resultado-text').textContent = '(sube un archivo CSV con datos EEG)';
+  document.getElementById('confianza-text').style.display = 'none';
+}
+
+formGuardarAnalisis.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  if (!usuario) {
+    alert('Debes iniciar sesión');
+    return;
+  }
+
+  const file = document.getElementById('fileInput').files[0];
+  const nombre = document.getElementById('nombreAnalisis').value.trim();
+  const descripcion = document.getElementById('descripcionAnalisis').value.trim();
+  const resultado = document.getElementById('resultadoActual').textContent;
+  const confianza = document.getElementById('confianza-text').textContent.replace('Confianza: ', '').replace('%', '');
+
+  if (!nombre || !file) {
+    alert('Por favor ingresa un nombre y selecciona un archivo');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('usuarioId', usuario.id);
+  formData.append('nombre', nombre);
+  formData.append('descripcion', descripcion);
+  formData.append('resultado', resultado);
+  formData.append('confianza', confianza);
+  formData.append('archivo', file);
+
+  try {
+    const res = await fetch('http://localhost:3000/api/guardar-analisis', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      alert('Análisis guardado correctamente');
+      modalFormularioGuardar.style.display = 'none';
+      limpiarUploadBox();
+      await cargarHistorial();
+    } else {
+      alert('Error al guardar análisis');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Error de conexión con el servidor');
+  }
+});
+
+async function cargarHistorial() {
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  if (!usuario || !usuario.id) return;
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/historial/${usuario.id}`);
+    const data = await response.json();
+
+    if (data.success && Array.isArray(data.historial)) {
+     // mostrarHistorialEnModal(data.historial);
+    } else {
+      console.error('Error cargando historial:', data.error || 'Formato incorrecto');
+      document.getElementById('historialLista').innerHTML = '<p>No hay análisis guardados</p>';
+    }
+  } catch (error) {
+    console.error('Error de conexión al cargar historial:', error);
+  }
+}
+
+
+function mostrarHistorialEnModal(historial) {
+  const historialLista = document.getElementById('historialLista');
+
+  if (!historial || historial.length === 0) {
+    historialLista.innerHTML = `
+      <p style="text-align:center; color:#4A148C; font-family:'Rubik', sans-serif;">
+        No hay análisis guardados todavía.
+      </p>`;
+    return;
+  }
+
+  historialLista.innerHTML = ""; 
+
+  historial.forEach((item) => {
+    const fecha = new Date(item.fecha).toLocaleString();
+    const confianza = item.confianza ? `${parseFloat(item.confianza).toFixed(1)}%` : "–";
+    const descripcion = item.descripcion ? item.descripcion : "Sin descripción";
+
+    const div = document.createElement("div");
+    div.classList.add("historial-item");
+    div.dataset.id = item.id;
+
+    div.innerHTML = `
+      <div class="archivo-nombre">
+        <a href="${item.archivo_url}" target="_blank" download="${item.archivo_nombre}">
+          ${item.archivo_nombre}
+        </a>
+      </div>
+      <h3>${item.nombre}</h3>
+      <p class="desc">${descripcion}</p>
+      <div class="historial-detalles">
+        <span class="resultado">${item.resultado}</span>
+        <span class="confianza">Confianza: ${confianza}</span>
+        <span class="fecha">${fecha}</span>
+      </div>
+      <button class="eliminar-analisis">Eliminar</button>
+    `;
+
+    historialLista.appendChild(div);
+  });
+
+  document.querySelectorAll(".eliminar-analisis").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.target.closest(".historial-item").dataset.id;
+      if (confirm("¿Deseas eliminar este análisis definitivamente?")) {
+        try {
+          const res = await fetch(`http://localhost:3000/api/analisis/${id}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert("Análisis eliminado correctamente");
+            await cargarHistorial();
+          } else {
+            alert("Error al eliminar el análisis");
+          }
+        } catch (err) {
+          console.error("Error al eliminar:", err);
+          alert("Error al conectar con el servidor");
+        }
+      }
+    });
+  });
+}
+
