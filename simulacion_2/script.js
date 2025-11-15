@@ -1,4 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ===== ANIMACIONES DEL LOGO =====
+  const logo = document.querySelector('.logoHeader');
+  
+  // Animación del logo del header
+  if (logo) {
+    logo.classList.add('pulse');
+    
+    // Remover la clase de pulso después de la animación
+    setTimeout(() => {
+      logo.classList.remove('pulse');
+    }, 6000);
+    
+    // Animación especial al hacer click en el logo
+    logo.addEventListener('click', () => {
+      logo.classList.add('loading');
+      setTimeout(() => {
+        logo.classList.remove('loading');
+      }, 2000);
+    });
+    
+    // Animación al pasar el mouse (ya está en CSS con :hover)
+    // Pero podemos agregar efectos adicionales
+    logo.addEventListener('mouseenter', () => {
+      logo.style.animationPlayState = 'paused';
+    });
+    
+    logo.addEventListener('mouseleave', () => {
+      logo.style.animationPlayState = 'running';
+    });
+  }
+
   // Modo oscuro
   const themeToggle = document.getElementById('themeToggle');
   const body = document.body;

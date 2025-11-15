@@ -73,6 +73,69 @@ body.dark-mode .logo-text {
 .logoHeader {
     width: 32px;
     height: 32px;
+    transition: all 0.3s ease;
+    animation: logoFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(106, 27, 154, 0.2));
+}
+
+.logoHeader:hover {
+    transform: scale(1.1) rotate(5deg);
+    filter: drop-shadow(0 4px 8px rgba(106, 27, 154, 0.4));
+}
+
+/* Animación flotante del logo */
+@keyframes logoFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(2deg);
+    }
+}
+
+/* Animación de pulso al cargar la página */
+@keyframes logoPulse {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 2px 4px rgba(106, 27, 154, 0.2));
+    }
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 4px 8px rgba(106, 27, 154, 0.4));
+    }
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 2px 4px rgba(106, 27, 154, 0.2));
+    }
+}
+
+/* Animación de rotación suave */
+@keyframes logoSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Clase para activar animación de carga */
+.logoHeader.loading {
+    animation: logoSpin 2s linear infinite;
+}
+
+/* Clase para animación de pulso inicial */
+.logoHeader.pulse {
+    animation: logoPulse 2s ease-in-out 3;
+}
+
+/* Animación para modo oscuro */
+body.dark-mode .logoHeader {
+    filter: drop-shadow(0 2px 4px rgba(106, 27, 154, 0.3)) brightness(1.1);
+}
+
+body.dark-mode .logoHeader:hover {
+    filter: drop-shadow(0 4px 8px rgba(106, 27, 154, 0.5)) brightness(1.2);
 }
 
 .logo-text {
@@ -530,6 +593,15 @@ body.dark-mode .hero-section {
     z-index: 2;
 }
 
+
+
+
+
+
+
+
+
+
 .hero-title {
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 700;
@@ -537,6 +609,7 @@ body.dark-mode .hero-section {
     line-height: 1.2;
     letter-spacing: -1px;
     transition: color 0.3s ease;
+    text-align: center;
 }
 
 .gradient-text {
@@ -1078,6 +1151,10 @@ body.dark-mode .resultado-container {
     font-size: 1.5rem;
 }
 
+body.dark-mode .persona h2 {
+    color: #c9d1d9;
+}
+
 .resultado {
     display: flex;
     flex-direction: column;
@@ -1094,6 +1171,10 @@ body.dark-mode .resultado-container {
     margin: 10px 0;
     text-align: center;
     min-height: 50px;
+}
+
+body.dark-mode #resultado-text {
+    color: #c9d1d9;
 }
 
 #confianza-text {
