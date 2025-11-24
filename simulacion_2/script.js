@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   
-  function crearAvatar(nombreUsuario) {
+function crearAvatar(nombreUsuario) {
     const userIconContainer = document.getElementById('userIconContainer');
     if (!userIconContainer) return;
 
@@ -102,18 +102,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarContainer = document.createElement('div');
     avatarContainer.classList.add('avatar-container');
 
-    // Crear icono de usuario con hover
-    const avatarIcon = document.createElement('div');
-    avatarIcon.classList.add('avatar-icon');
-    avatarIcon.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
-    `;
-    avatarIcon.setAttribute('title', nombreUsuario);
+    // Extraer inicial
+    const inicial = nombreUsuario.trim().charAt(0).toUpperCase();
 
-    // Crear menú de logout mejorado
+    // Crear círculo con la inicial
+    const avatarCircle = document.createElement('div');
+    avatarCircle.classList.add('avatar-circle');
+    avatarCircle.textContent = inicial;
+
+    // Crear menú de logout
     const logoutMenu = document.createElement('div');
     logoutMenu.classList.add('logout-menu');
 
@@ -121,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     userInfo.classList.add('logout-user-info');
     userInfo.innerHTML = `
       <div class="logout-avatar-circle">
-        <span>${nombreUsuario.slice(0, 2).toUpperCase()}</span>
+        <span>${inicial}</span>
       </div>
       <div class="logout-user-details">
         <div class="logout-username">${nombreUsuario}</div>
@@ -135,78 +132,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.createElement('button');
     logoutBtn.classList.add('logout-button');
     logoutBtn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+           viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
         <polyline points="16 17 21 12 16 7"></polyline>
         <line x1="21" y1="12" x2="9" y2="12"></line>
       </svg>
       <span>Cerrar sesión</span>
     `;
-    
+
     logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('usuario');
-      document.getElementById('btnHistorial').style.display = 'none';
-      logoutMenu.style.display = 'none';
-      
-      // Restaurar el icono de usuario original
-      const newUserIconContainer = document.createElement('div');
-      newUserIconContainer.classList.add('user-icon-container');
-      newUserIconContainer.id = 'userIconContainer';
-      newUserIconContainer.innerHTML = `
-        <svg class="user-icon" id="userIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="button" tabindex="0" aria-label="Abrir menú de sesión">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      `;
-      
-      // Agregar event listeners al nuevo icono
-      const newUserIcon = newUserIconContainer.querySelector('#userIcon');
-      if (newUserIcon) {
+        localStorage.removeItem('usuario');
+        document.getElementById('btnHistorial').style.display = 'none';
+        logoutMenu.style.display = 'none';
+
+        // Restaurar icono original
+        const newUserIconContainer = document.createElement('div');
+        newUserIconContainer.classList.add('user-icon-container');
+        newUserIconContainer.id = 'userIconContainer';
+        newUserIconContainer.innerHTML = `
+          <svg class="user-icon" id="userIcon" xmlns="http://www.w3.org/2000/svg" 
+               width="24" height="24" viewBox="0 0 24 24" fill="none" 
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+               stroke-linejoin="round" role="button" tabindex="0">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        `;
+
+        const newUserIcon = newUserIconContainer.querySelector('#userIcon');
         newUserIcon.addEventListener('click', () => {
-          modal.style.display = 'flex';
-          formRegistro.classList.add('activo');
-          formLogin.classList.remove('activo');
+            document.getElementById('modalSesion').style.display = 'flex';
         });
-        
-        newUserIcon.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            modal.style.display = 'flex';
-            formRegistro.classList.add('activo');
-            formLogin.classList.remove('activo');
-          }
-        });
-      }
-      
-      avatarContainer.replaceWith(newUserIconContainer);
+
+        avatarContainer.replaceWith(newUserIconContainer);
     });
 
     logoutMenu.appendChild(userInfo);
     logoutMenu.appendChild(logoutDivider);
     logoutMenu.appendChild(logoutBtn);
-    avatarContainer.appendChild(avatarIcon);
+
+    avatarContainer.appendChild(avatarCircle);
     avatarContainer.appendChild(logoutMenu);
 
-    // Toggle del menú
-    avatarIcon.addEventListener('click', (e) => {
-      e.stopPropagation();
-      logoutMenu.style.display =
-        logoutMenu.style.display === 'block' ? 'none' : 'block';
+    // Toggle menú
+    avatarCircle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        logoutMenu.style.display =
+            logoutMenu.style.display === 'block' ? 'none' : 'block';
     });
 
-    // Cerrar menú al hacer clic fuera
     document.addEventListener('click', (e) => {
-      if (!avatarContainer.contains(e.target)) {
-        logoutMenu.style.display = 'none';
-      }
+        if (!avatarContainer.contains(e.target)) {
+            logoutMenu.style.display = 'none';
+        }
     });
 
-    // Reemplazar el contenedor del icono con el avatar
-    const container = document.getElementById('userIconContainer');
-    if (container && container.parentNode) {
-      container.parentNode.replaceChild(avatarContainer, container);
-    }
-  }
+    // Reemplazar icono original
+    userIconContainer.parentNode.replaceChild(avatarContainer, userIconContainer);
+}
+
 
   
   function mostrarHistorial() {
@@ -232,58 +218,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Función para cargar el historial desde el servidor
-  async function cargarHistorial() {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (!usuario || !usuario.id) return;
 
-    try {
-      const response = await fetch(`/api/historial/${usuario.id}`);
-      const data = await response.json();
-      
-      if (data.success) {
-        mostrarHistorialEnModal(data.historial);
-      } else {
-        console.error("Error cargando historial:", data.error);
-      }
-    } catch (error) {
-      console.error("Error de conexión al cargar historial:", error);
-    }
-  }
+  window.actualizarBotonGuardar = function () {
+    const btnGuardar = document.getElementById("btnGuardarAnalisis");
+    const usuario = localStorage.getItem("usuario");
 
-  // Función para mostrar el historial en el modal
-  function mostrarHistorialEnModal(historial) {
-    const historialLista = document.getElementById('historialLista');
-    
-    if (historial.length === 0) {
-      historialLista.innerHTML = '<p>No hay análisis previos</p>';
-      return;
+    if (btnGuardar) {
+        if (usuario) {
+            btnGuardar.style.display = "inline-block";
+        } else {
+            btnGuardar.style.display = "none";
+        }
     }
-    
-    historialLista.innerHTML = historial.map(item => {
-      const fecha = new Date(item.fecha_analisis).toLocaleString();
-      const confianza = (item.confianza * 100).toFixed(1);
-      
-      let colorClass = '';
-      if (item.sentimiento.toLowerCase().includes('positivo')) {
-        colorClass = 'resultado-positivo';
-      } else if (item.sentimiento.toLowerCase().includes('negativo')) {
-        colorClass = 'resultado-negativo';
-      } else {
-        colorClass = 'resultado-neutro';
-      }
-      
-      return `
-        <div class="historial-item">
-          <div class="historial-archivo">📄 ${item.archivo_nombre}</div>
-          <div class="historial-resultado ${colorClass}">${item.sentimiento}</div>
-          <div class="historial-confianza">${confianza}%</div>
-          <div class="historial-fecha">${fecha}</div>
-        </div>
-      `;
-    }).join('');
-  }
+};
+
   
+  console.log("Script cargado correctamente");
 
   formRegistroForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -303,6 +253,8 @@ document.addEventListener('DOMContentLoaded', () => {
         crearAvatar(data.usuario.nombre);
         mostrarHistorial();
         modal.style.display = 'none';
+        actualizarBotonGuardar();
+
       } else {
         alert(data.error);
       }
@@ -323,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, password })
+        
       });
       const data = await res.json();
       if (data.success) {
@@ -330,6 +283,8 @@ document.addEventListener('DOMContentLoaded', () => {
         crearAvatar(data.usuario.nombre);
         mostrarHistorial();
         modal.style.display = 'none';
+        actualizarBotonGuardar();
+
       } else {
         alert(data.error);
       }
@@ -337,6 +292,12 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error(err);
       alert("Error al conectar con el servidor");
     }
+    
+    document.getElementById("formGuardarAnalisis").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  console.log("SUBMIT DISPARADO");
+});
+
   });
 
   
@@ -345,6 +306,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const usuario = JSON.parse(usuarioGuardado);
     crearAvatar(usuario.nombre);
     mostrarHistorial();
+    actualizarBotonGuardar();
+
   }
 
   
@@ -379,39 +342,58 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.eliminarArchivo = function (e) {
-    e.stopPropagation();
-    const fileInfo = document.getElementById("file-info");
-    const icono = document.querySelector(".icono");
-    const removeBtn = document.getElementById("removeBtn");
-    const fileInput = document.getElementById("fileInput");
-    const resultadoText = document.getElementById("resultado-text");
-    const confianzaText = document.getElementById("confianza-text");
-    
-    if (fileInfo) fileInfo.style.display = "none";
-    if (icono) {
-      // Resetear estilos inline problemáticos pero mantener display
-      icono.style.display = "block";
-      icono.style.opacity = "0.6"; // Opacidad original según CSS
-      icono.style.filter = "";
-      icono.style.color = "";
-      // Asegurar que no tenga filtros de color aplicados
-      icono.style.webkitFilter = "";
-      icono.style.mozFilter = "";
-    }
-    if (removeBtn) removeBtn.style.display = "none";
-    if (fileInput) fileInput.value = "";
-    
-    // Limpiar resultados y resetear color al original
+  e.stopPropagation();
+
+  const fileInput = document.getElementById("fileInput");
+  const fileInfo = document.getElementById("file-info");
+  const icono = document.querySelector(".icono");
+  const removeBtn = document.getElementById("removeBtn");
+  const resultadoText = document.getElementById("resultado-text");
+  const confianzaText = document.getElementById("confianza-text");
+
+  // Si no hay archivo, limpiar
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    if (fileInfo) fileInfo.style.display = 'none';
+    if (icono) icono.style.display = 'block';
+    if (removeBtn) removeBtn.style.display = 'none';
     if (resultadoText) {
       resultadoText.textContent = "(sube un archivo CSV con datos EEG)";
-      // Resetear el color al original (#6A1B9A)
       resultadoText.style.color = "#6A1B9A";
     }
     if (confianzaText) {
       confianzaText.style.display = "none";
       confianzaText.textContent = "";
     }
+    return;
   }
+
+  // Si hay usuario logueado -> preguntar si quiere guardar
+  const usuario = localStorage.getItem('usuario');
+  if (usuario) {
+    const modalConfirmar = document.getElementById('modalConfirmar');
+    if (modalConfirmar) modalConfirmar.style.display = 'flex';
+    return;
+  }
+
+  // Si NO hay usuario -> borrar de inmediato
+  if (fileInfo) fileInfo.style.display = 'none';
+  if (icono) {
+    icono.style.display = 'block';
+    icono.style.opacity = "0.6";
+    icono.style.filter = "";
+  }
+  if (removeBtn) removeBtn.style.display = 'none';
+  if (fileInput) fileInput.value = '';
+  if (resultadoText) {
+    resultadoText.textContent = "(sube un archivo CSV con datos EEG)";
+    resultadoText.style.color = "#6A1B9A";
+  }
+  if (confianzaText) {
+    confianzaText.style.display = "none";
+    confianzaText.textContent = "";
+  }
+};
+
 
   // Función para analizar EEG
   window.analizarEEG = async function() {
@@ -513,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ===== MODAL HISTORIAL =====
+
 const modalHistorial = document.getElementById("modalHistorial");
 const cerrarHistorial = document.querySelector(".cerrar-historial");
 const btnHistorial = document.getElementById("btnHistorial");
@@ -555,8 +537,9 @@ formGuardarAnalisis.addEventListener('submit', async (e) => {
   const file = document.getElementById('fileInput').files[0];
   const nombre = document.getElementById('nombreAnalisis').value.trim();
   const descripcion = document.getElementById('descripcionAnalisis').value.trim();
-  const resultado = document.getElementById('resultadoActual').textContent;
-  const confianza = document.getElementById('confianza-text').textContent.replace('Confianza: ', '').replace('%', '');
+  const resultado = document.getElementById('resultadoAnalisis').value;
+  const confianza = document.getElementById('confianzaAnalisis').value;
+
 
   if (!nombre || !file) {
     alert('Por favor ingresa un nombre y selecciona un archivo');
@@ -593,87 +576,163 @@ formGuardarAnalisis.addEventListener('submit', async (e) => {
 });
 
 async function cargarHistorial() {
-  const usuario = JSON.parse(localStorage.getItem('usuario'));
-  if (!usuario || !usuario.id) return;
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario || !usuario.id) return;
 
-  try {
-    const response = await fetch(`http://localhost:3000/api/historial/${usuario.id}`);
-    const data = await response.json();
+    try {
+        const response = await fetch(`http://localhost:3000/api/historial/${usuario.id}`);
+        const data = await response.json();
 
-    if (data.success && Array.isArray(data.historial)) {
-     // mostrarHistorialEnModal(data.historial);
-    } else {
-      console.error('Error cargando historial:', data.error || 'Formato incorrecto');
-      document.getElementById('historialLista').innerHTML = '<p>No hay análisis guardados</p>';
+        if (data.success && Array.isArray(data.historial)) {
+            mostrarHistorialEnModal(data.historial);
+        } else {
+            document.getElementById('historialLista').innerHTML =
+                '<p>No hay análisis guardados</p>';
+        }
+
+    } catch (error) {
+        console.error('Error cargando historial:', error);
+        document.getElementById('historialLista').innerHTML =
+            '<p>Error cargando historial</p>';
     }
-  } catch (error) {
-    console.error('Error de conexión al cargar historial:', error);
-  }
 }
 
 
+function cerrarModalConfirmar() {
+  const m = document.getElementById('modalConfirmar');
+  if (m) m.style.display = 'none';
+}
+
+function abrirModalGuardar() {
+  cerrarModalConfirmar();
+
+  const modalFormulario = document.getElementById('modalFormulario');
+  const resultadoActual = document.getElementById('resultado-text');
+  const confianzaActual = document.getElementById('confianza-text');
+  const fileInput = document.getElementById("fileInput");
+  document.getElementById("archivoAnalisis").value = fileInput.files[0]?.name || "";
+
+
+  document.getElementById('resultadoAnalisis').value = resultadoActual.textContent || "";
+  document.getElementById('confianzaAnalisis').value =
+    confianzaActual.textContent.replace("Confianza: ", "") || "";
+
+  modalFormulario.style.display = 'flex';
+  document.getElementById('nombreAnalisis').focus();
+}
+
+window.cerrarModalFormulario = function () {
+    const modal = document.getElementById("modalFormulario");
+    if (modal) modal.style.display = "none";
+};
+
+
+function cancelarGuardado() {
+  cerrarModalConfirmar();
+  limpiarUploadBox();
+}
+
+
+
+window.abrirModalGuardarDesdeBoton = function () {
+    const modalFormulario = document.getElementById("modalFormulario");
+    const fileInput = document.getElementById("fileInput");
+    const resultadoText = document.getElementById("resultado-text");
+    const confianzaText = document.getElementById("confianza-text");
+
+    if (!fileInput.files.length) {
+        alert("Primero realizá un análisis para poder guardarlo.");
+        return;
+    }
+
+    // LLENAR CAMPOS DEL FORMULARIO
+    document.getElementById("archivoAnalisis").value = fileInput.files[0].name;
+    document.getElementById("resultadoAnalisis").value = resultadoText.textContent;
+    document.getElementById("confianzaAnalisis").value = confianzaText.textContent.replace("Confianza: ", "");
+
+    modalFormulario.style.display = "flex";
+};
+
+
 function mostrarHistorialEnModal(historial) {
-  const historialLista = document.getElementById('historialLista');
+    const historialLista = document.getElementById('historialLista');
 
-  if (!historial || historial.length === 0) {
-    historialLista.innerHTML = `
-      <p style="text-align:center; color:#4A148C; font-family:'Rubik', sans-serif;">
-        No hay análisis guardados todavía.
-      </p>`;
-    return;
-  }
+    if (!historial || historial.length === 0) {
+        historialLista.innerHTML = `
+            <p style="text-align:center; color:#4A148C; font-family:'Rubik', sans-serif;">
+                No tienes análisis guardados todavía.
+            </p>`;
+        return;
+    }
 
-  historialLista.innerHTML = ""; 
+    historialLista.innerHTML = "";
 
-  historial.forEach((item) => {
-    const fecha = new Date(item.fecha).toLocaleString();
-    const confianza = item.confianza ? `${parseFloat(item.confianza).toFixed(1)}%` : "–";
-    const descripcion = item.descripcion ? item.descripcion : "Sin descripción";
+    historial.forEach(item => {
+        const fecha = new Date(item.fecha).toLocaleString();
+        const confianza = item.confianza != null ? `${(item.confianza * 100).toFixed(1)}%` : "–";
+        const descripcion = item.descripcion || "Sin descripción";
 
-    const div = document.createElement("div");
-    div.classList.add("historial-item");
-    div.dataset.id = item.id;
+        const div = document.createElement("div");
+        div.classList.add("historial-item");
+        div.dataset.id = item.id;
 
-    div.innerHTML = `
-      <div class="archivo-nombre">
-        <a href="${item.archivo_url}" target="_blank" download="${item.archivo_nombre}">
-          ${item.archivo_nombre}
-        </a>
-      </div>
-      <h3>${item.nombre}</h3>
-      <p class="desc">${descripcion}</p>
-      <div class="historial-detalles">
-        <span class="resultado">${item.resultado}</span>
-        <span class="confianza">Confianza: ${confianza}</span>
-        <span class="fecha">${fecha}</span>
-      </div>
-      <button class="eliminar-analisis">Eliminar</button>
-    `;
+        let colorClass = "";
+        const txt = item.resultado.toLowerCase();
+        if (txt.includes("positivo")) colorClass = "resultado-positivo";
+        else if (txt.includes("negativo")) colorClass = "resultado-negativo";
+        else colorClass = "resultado-neutro";
 
-    historialLista.appendChild(div);
-  });
+        div.innerHTML = `
+            <div class="archivo-nombre">
+                <a href="${item.archivo_url}" 
+                   target="_blank" 
+                   download="${item.archivo_nombre}" 
+                   style="text-decoration: underline; cursor:pointer;">
+                    ${item.archivo_nombre}
+                </a>
+            </div>
 
-  document.querySelectorAll(".eliminar-analisis").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      const id = e.target.closest(".historial-item").dataset.id;
-      if (confirm("¿Deseas eliminar este análisis definitivamente?")) {
-        try {
-          const res = await fetch(`http://localhost:3000/api/analisis/${id}`, {
-            method: "DELETE",
-          });
-          const data = await res.json();
-          if (data.success) {
-            alert("Análisis eliminado correctamente");
-            await cargarHistorial();
-          } else {
-            alert("Error al eliminar el análisis");
-          }
-        } catch (err) {
-          console.error("Error al eliminar:", err);
-          alert("Error al conectar con el servidor");
-        }
-      }
+            <h3>${item.nombre}</h3>
+
+            <p class="desc">${descripcion}</p>
+
+            <div class="historial-detalles">
+                <span class="resultado ${colorClass}">${item.resultado}</span>
+                <span class="confianza">Confianza: ${confianza}</span>
+                <span class="fecha">${fecha}</span>
+            </div>
+
+            <button class="eliminar-analisis">Eliminar</button>
+        `;
+
+        historialLista.appendChild(div);
     });
-  });
+
+    // ⬇⬇⬇ AÑADIR ESTO SI O SI ⬇⬇⬇
+    document.querySelectorAll(".eliminar-analisis").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            const id = e.target.closest(".historial-item").dataset.id;
+
+            if (confirm("¿Deseas eliminar este análisis definitivamente?")) {
+                try {
+                    const res = await fetch(`http://localhost:3000/api/analisis/${id}`, {
+                        method: "DELETE"
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert("Análisis eliminado correctamente");
+                        await cargarHistorial();
+                    } else {
+                        alert("Error al eliminar el análisis");
+                    }
+                } catch (err) {
+                    console.error("Error al eliminar:", err);
+                    alert("Error de conexión con el servidor");
+                }
+            }
+        });
+    });
 }
 
