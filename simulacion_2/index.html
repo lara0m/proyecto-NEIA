@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +8,7 @@
     <link href="style.css" rel="stylesheet" type="text/css">
     <link rel="icon" type="png" href="Logo.PNG">
     <title>NEIA - Análisis de Emociones EEG</title>
-    <script src="script.js"></script>
+    
 </head>
 <body>
     <!-- Header fijo -->
@@ -275,9 +276,25 @@
 
                 <input type="file" id="fileInput" accept=".csv,text/csv" style="display: none" onchange="mostrarArchivo(event)">
 
-                <div class="boton">
-                    <button class="botonIniciar" onclick="analizarEEG()">ANALIZAR</button>
-                </div>
+                <div class="boton" style="display: flex; gap: 15px; align-items: center;">
+
+    <div class="boton--grupo">
+    <button class="botonIniciar" onclick="analizarEEG()">ANALIZAR</button>
+
+    <!-- BOTÓN GUARDAR (solo visible con usuario) -->
+    <button id="btnGuardarAnalisis"
+        class="botonGuardar"
+        onclick="abrirModalGuardarDesdeBoton()"
+        style="display:none;">
+    GUARDAR
+</button>
+
+</div>
+
+
+</div>
+
+
 
                 <div class="loading" id="loading" style="display: none;" role="status" aria-live="polite">
                     <h2>Analizando señales EEG...</h2>
@@ -293,52 +310,51 @@
                         <p id="confianza-text" style="display: none;"></p>
                     </div>
                 </div>
+
+                <!-- MODAL CONFIRMAR GUARDADO -->
+                <div id="modalConfirmar" class="modal">
+                <div class="modal-contenido">
+                <span class="cerrar" onclick="cerrarModalConfirmar()">&times;</span>
+                    <h2>¿Deseas guardar este análisis?</h2>
+                <div style="display:flex; gap:12px; justify-content:center; margin-top:1rem;">
+                    <button class="btn" onclick="abrirModalGuardar()">Guardar</button>
+                    <button class="btn btn-cancelar" onclick="cancelarGuardado()">No guardar</button>
+                </div>
             </div>
         </div>
-    </section>
 
-
-
-    
-<!-- MODAL CONFIRMAR GUARDADO -->
-<div id="modalConfirmar" class="modal">
-    <div class="modal-contenido">
-      <span class="cerrar" onclick="cerrarModalConfirmar()">&times;</span>
-      <h2>¿Deseas guardar este análisis en tu historial?</h2>
-  
-      <div class="botones-confirmar">
-        <button class="btn" onclick="abrirModalGuardar()">Guardar</button>
-        <button class="btn btn-cancelar" onclick="cancelarGuardado()">No guardar</button>
-      </div>
-    </div>
-  </div>
-  
-  
-  <!-- MODAL FORMULARIO DE GUARDADO -->
+        
 <div id="modalFormulario" class="modal">
     <div class="modal-contenido">
       <span class="cerrar" onclick="cerrarModalFormulario()">&times;</span>
       <h2>Guardar análisis</h2>
   
-      <form id="formGuardarAnalisis">
-        
-        <label>Nombre del análisis *</label>
-        <input type="text" id="nombreAnalisis" required />
-  
-        <label>Descripción (opcional)</label>
-        <input type="text" id="descripcionAnalisis" />
-  
-        <label>Resultado</label>
-        <input type="text" id="resultadoAnalisis" readonly />
-  
-        <label>Confianza</label>
-        <input type="text" id="confianzaAnalisis" readonly />
-  
-        <button type="submit" class="btn">Guardar</button>
-  
-      </form>
+      <form id="formGuardarAnalisis" enctype="multipart/form-data">
+
+    <label>Archivo adjunto:</label>
+    <input type="text" id="archivoAnalisis" name="archivoAnalisis" readonly>
+
+    <label>Resultado:</label>
+    <input type="text" id="resultadoAnalisis" readonly>
+
+    <label>Confianza:</label>
+    <input type="text" id="confianzaAnalisis" readonly>
+
+    <label>Nombre del análisis (obligatorio):</label>
+    <input type="text" id="nombreAnalisis" required>
+
+    <label>Descripción (opcional):</label>
+    <textarea id="descripcionAnalisis"></textarea>
+
+    <button type="submit" class="btn">Guardar</button>
+</form>
     </div>
   </div>
+
+            </div>
+        </div>
+    </section>
+
   
     <!-- Sección Presentación -->
     <section id="presentacion" class="presentation-section">
@@ -497,7 +513,7 @@
             </div>
         </div>
     </div>
-
+    <script src="script.js"></script>
     <script>
         // Función para acordeones
         function toggleAccordion(button) {

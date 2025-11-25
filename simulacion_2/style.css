@@ -2178,3 +2178,304 @@ body.dark-mode .proceso-details {
 .btn-cancelar {
   background-color: #d32f2f;
 }
+
+/* --- Grupo de botones en área de análisis --- */
+.boton--grupo {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.botonGuardar {
+    background-color: #6A1B9A;
+    color: #F5F5F5;
+    border: none;
+    padding: 12px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.botonGuardar:hover {
+    background-color: #4A148C;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(106, 27, 154, 0.3);
+}
+
+.btn-guardar:focus {
+  outline: 3px solid rgba(106, 27, 154, 0.18);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .boton--grupo {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.archivo-descargar {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* ===========================
+   MODAL - HISTORIAL
+=========================== */
+.modal-historial {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(35, 0, 55, 0.65);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+.historial-contenido {
+    background: #ffffff;
+    width: 85%;
+    max-width: 650px;
+    max-height: 85vh;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0px 6px 20px rgba(90, 0, 120, 0.25);
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.25s ease-out;
+    font-family: 'Rubik', sans-serif;
+}
+
+/* Scroll suave y estético */
+.historial-contenido::-webkit-scrollbar {
+    width: 8px;
+}
+.historial-contenido::-webkit-scrollbar-thumb {
+    background: #9f39e6;
+    border-radius: 5px;
+}
+.historial-contenido::-webkit-scrollbar-track {
+    background: #f2e6fa;
+}
+
+/* Cerrar */
+.cerrar-historial {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    font-size: 26px;
+    color: #5e0b8a;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.cerrar-historial:hover {
+    transform: scale(1.15);
+    color: #a721e3;
+}
+
+/* Título */
+.historial-contenido h2 {
+    text-align: center;
+    color: #5e0b8a;
+    font-size: 26px;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+/* Lista */
+.historial-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Cada item */
+.historial-item {
+    background: #faf6ff;
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0px 4px 12px rgba(80, 0, 120, 0.12);
+    transition: 0.25s ease;
+    border: 1.5px solid #e7d0ff;
+}
+
+.historial-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 6px 18px rgba(80, 0, 120, 0.18);
+    background: #f5ecff;
+}
+
+/* Archivo */
+.archivo-nombre a {
+    font-size: 15px;
+    font-weight: 500;
+    color: #6a1b9a;
+    text-decoration: underline;
+    cursor: pointer;
+    word-break: break-all;
+}
+
+/* Nombre del análisis */
+.historial-item h3 {
+    margin: 8px 0 5px;
+    font-size: 18px;
+    color: #4a0066;
+    font-weight: 600;
+}
+
+/* Descripción */
+.historial-item .desc {
+    font-size: 14px;
+    color: #5c5c5c;
+    margin-bottom: 10px;
+}
+
+/* Detalles */
+.historial-detalles {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-top: 8px;
+    color: #333;
+}
+
+/* Colores del resultado */
+.resultado-positivo {
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+.resultado-negativo {
+    color: #c62828;
+    font-weight: 600;
+}
+
+.resultado-neutro {
+    color: #ef6c00;
+    font-weight: 600;
+}
+
+/* Botón eliminar */
+.eliminar-analisis {
+    margin-top: 12px;
+    background: #ffebf0;
+    border: 1px solid #ffb7c8;
+    color: #d62857;
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.eliminar-analisis:hover {
+    background: #ffd4df;
+    border-color: #ff8aab;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes slideUp {
+    from { transform: translateY(25px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.avatar-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    background: #6A1B9A;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Rubik", sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+}
+
+.avatar-circle:hover {
+    transform: scale(1.1);
+}
+
+/* Menú logout */
+.logout-menu {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    width: 200px;
+    display: none;
+    box-shadow: 0px 4px 16px rgba(0,0,0,0.15);
+    z-index: 999;
+}
+
+.logout-avatar-circle {
+    width: 40px;
+    height: 40px;
+    background: #9C27B0;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.logout-user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.logout-user-details .logout-username {
+    font-weight: bold;
+}
+
+.logout-divider {
+    height: 1px;
+    background: #ddd;
+    margin: 8px 0;
+}
+
+.logout-button {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: #6A1B9A;
+    font-weight: bold;
+}
+
