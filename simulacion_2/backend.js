@@ -24,6 +24,10 @@ const upload = multer({
 app.use(cors());
 app.use(bodyParser.json());
 
+// Servir el frontend desde la carpeta "public"
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 // =======================================================
 //  POSTGRES (NEON)
 // =======================================================
@@ -262,6 +266,15 @@ app.get('/api/historial/:usuarioId', async (req, res) => {
 
   res.json({ success: true, historial: result.rows });
 });
+
+// Cualquier ruta que no sea /api devuelve el index.html del frontend
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 
 // =======================================================
 app.listen(port, () => {
