@@ -238,15 +238,17 @@ app.post('/api/guardar-analisis', upload.single("archivo"), async (req, res) => 
         nombre,
         descripcion,
         resultado,
-        confianza || null,
-        file.originalname,
-        urlData.publicUrl,
+parseFloat((confianza + "").replace("%","")) || null,
+file.originalname,
+urlData.publicUrl,
+
       ]
     );
 
     res.json({ success: true });
 
   } catch (err) {
+    console.error("🔥 ERROR SUPABASE:", err); // ← ESTA LÍNEA AHORA SÍ ESTÁ CORRECTA
     res.status(500).json({ error: "Error guardando análisis" });
   }
 });
