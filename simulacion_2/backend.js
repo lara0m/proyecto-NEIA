@@ -1,3 +1,6 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+
 // =======================================================
 //  IMPORTS Y CONFIGURACIÓN
 // =======================================================
@@ -219,16 +222,23 @@ app.post('/api/guardar-analisis', upload.single("archivo"), async (req, res) => 
     if (!usuarioId || !file)
       return res.status(400).json({ error: "Faltan datos o archivo" });
 
+    // Convertir confianza correctamente: de "58.3%" a 58.3
+    const confianzaReal = parseFloat(confianza.replace("%", "")) || null;
+
+    // Ruta para subir archivo a Supabase Storage
     const ruta = `${usuarioId}/${Date.now()}_${file.originalname}`;
 
+    // Subir archivo a Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from("analisis")
       .upload(ruta, file.buffer, { contentType: file.mimetype });
 
     if (uploadError) throw uploadError;
 
+    // Obtener URL pública del archivo
     const { data: urlData } = supabase.storage.from("analisis").getPublicUrl(ruta);
 
+    // Guardar en Postgres
     await pool.query(
       `INSERT INTO analisis 
        (usuario_id,nombre,descripcion,resultado,confianza,archivo_nombre,archivo_url)
@@ -238,20 +248,20 @@ app.post('/api/guardar-analisis', upload.single("archivo"), async (req, res) => 
         nombre,
         descripcion,
         resultado,
-parseFloat((confianza + "").replace("%","")) || null,
-file.originalname,
-urlData.publicUrl,
-
+        confianzaReal,      // <-- usamos el valor correcto
+        file.originalname,
+        urlData.publicUrl,
       ]
     );
 
     res.json({ success: true });
 
   } catch (err) {
-    console.error("🔥 ERROR SUPABASE:", err); // ← ESTA LÍNEA AHORA SÍ ESTÁ CORRECTA
+    console.error("🔥 ERROR SUPABASE:", err);
     res.status(500).json({ error: "Error guardando análisis" });
   }
 });
+
 
 // =======================================================
 //  HISTORIAL FINAL UNIFICADO
