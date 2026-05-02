@@ -554,11 +554,15 @@
                 
                 const timer = setInterval(() => {
                     current += increment;
+                    let suffix = '';
+                    if (target === 92) suffix = '%';
+                    else if (target >= 1000) suffix = '+';
+
                     if (current >= target) {
-                        stat.textContent = target + (target >= 1000 ? '+' : '');
+                        stat.textContent = target + suffix;
                         clearInterval(timer);
                     } else {
-                        stat.textContent = Math.floor(current) + (target >= 1000 ? '+' : '');
+                        stat.textContent = Math.floor(current) + suffix;
                     }
                 }, 16);
             });
